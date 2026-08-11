@@ -1,8 +1,8 @@
-const LINE = "rgba(255,255,255,0.28)";
-const LINE_SOFT = "rgba(255,255,255,0.16)";
-const LINE_FAINT = "rgba(255,255,255,0.1)";
-const CIRCLE = "rgba(255,255,255,0.26)";
-const CIRCLE_SOFT = "rgba(255,255,255,0.15)";
+const LINE = "rgba(255,255,255,0.14)";
+const LINE_SOFT = "rgba(255,255,255,0.08)";
+const LINE_FAINT = "rgba(255,255,255,0.05)";
+const CIRCLE = "rgba(255,255,255,0.12)";
+const CIRCLE_SOFT = "rgba(255,255,255,0.07)";
 
 function gridLines(step: number, w: number, h: number) {
   const hLines = Array.from({ length: Math.ceil(h / step) + 1 }, (_, i) => (

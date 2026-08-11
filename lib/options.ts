@@ -14,6 +14,11 @@ export const BASE_OFFER: SiteOption = {
   price: 0,
 };
 
+/** Places restantes pour l'offre promotionnelle à 0 CHF */
+export const PROMO_SPOTS_TOTAL = 10;
+export const PROMO_SPOTS_TAKEN = 7;
+export const PROMO_SPOTS_LEFT = PROMO_SPOTS_TOTAL - PROMO_SPOTS_TAKEN;
+
 export const SITE_OPTIONS: SiteOption[] = [
   {
     id: "catalogue",

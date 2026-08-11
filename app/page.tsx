@@ -4,6 +4,7 @@ import { MerlinLogo } from "./components/ui";
 import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
+import { PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
 import { Mail, Phone } from "lucide-react";
 
 const PROCESS = [
@@ -49,7 +50,7 @@ export default function Home() {
             <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
               <MotionDiv immediate>
                 <MerlinLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
-                <span className="t-mono-on-dark mt-6 block">
+                <span className="t-mono-on-dark mt-6 block !text-white/90">
                   Offre promotionnelle
                 </span>
                 <h2 className="t-display mt-4 text-[clamp(2rem,5vw,3.5rem)] text-white">
@@ -125,6 +126,29 @@ export default function Home() {
                   dont vous avez besoin — devis transparent, envoi direct
                   à notre équipe.
                 </p>
+                <div className="mt-6 max-w-xs">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="t-mono !text-black/70">Places disponibles</span>
+                    <span className="t-mono !text-black">
+                      {PROMO_SPOTS_LEFT}/{PROMO_SPOTS_TOTAL} restantes
+                    </span>
+                  </div>
+                  <div
+                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/8"
+                    role="progressbar"
+                    aria-valuenow={PROMO_SPOTS_LEFT}
+                    aria-valuemin={0}
+                    aria-valuemax={PROMO_SPOTS_TOTAL}
+                    aria-label={`${PROMO_SPOTS_LEFT} places restantes sur ${PROMO_SPOTS_TOTAL}`}
+                  >
+                    <div
+                      className="h-full rounded-full bg-red transition-all"
+                      style={{
+                        width: `${(PROMO_SPOTS_LEFT / PROMO_SPOTS_TOTAL) * 100}%`,
+                      }}
+                    />
+                  </div>
+                </div>
               </MotionDiv>
 
               <MotionDiv delay={0.12}>
