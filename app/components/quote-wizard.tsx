@@ -3,10 +3,13 @@
 import {
   BASE_OFFER,
   DEFAULT_SELECTED_OPTION_IDS,
+  OPTION_FILTERS,
   SITE_OPTIONS,
   computeTotal,
+  filterOptionsByCategory,
   formatChf,
   formatOptionPrice,
+  type OptionFilterId,
 } from "@/lib/options";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
@@ -40,12 +43,17 @@ export function QuoteWizard() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED_OPTION_IDS);
+  const [categoryFilter, setCategoryFilter] = useState<OptionFilterId>("all");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   const total = useMemo(() => computeTotal(selected), [selected]);
   const selectedOptions = SITE_OPTIONS.filter((o) => selected.includes(o.id));
+  const filteredOptions = useMemo(
+    () => filterOptionsByCategory(categoryFilter),
+    [categoryFilter],
+  );
 
   function toggleOption(id: string) {
     const option = SITE_OPTIONS.find((o) => o.id === id);
@@ -225,12 +233,26 @@ export function QuoteWizard() {
               </p>
             </div>
 
+            <div className="option-filters mb-4">
+              {OPTION_FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  onClick={() => setCategoryFilter(filter.id)}
+                  aria-pressed={categoryFilter === filter.id}
+                  className={`option-filter ${categoryFilter === filter.id ? "option-filter-active" : ""}`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+
             <MotionStagger
               immediate
               className="grid gap-2 max-h-[420px] overflow-y-auto pr-1"
               stagger={0.04}
             >
-              {SITE_OPTIONS.map((option) => {
+              {filteredOptions.map((option) => {
                 const isSelected = selected.includes(option.id);
                 const isLocked = option.locked === true;
                 return (
