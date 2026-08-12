@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export type InviteCodeRow = {
   id: string;
@@ -6,6 +6,29 @@ export type InviteCodeRow = {
   phone_digits: string;
   code: string;
   created_at: string;
+};
+
+export type Database = {
+  public: {
+    Tables: {
+      code: {
+        Row: InviteCodeRow;
+        Insert: {
+          phone: string;
+          phone_digits: string;
+          code: string;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<InviteCodeRow>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
 };
 
 function getSupabaseUrl() {
@@ -20,22 +43,8 @@ function getServiceRoleKey() {
   return key;
 }
 
-export function createServiceSupabase() {
-  return createClient<{
-    public: {
-      Tables: {
-        code: {
-          Row: InviteCodeRow;
-          Insert: {
-            phone: string;
-            phone_digits: string;
-            code: string;
-          };
-          Update: Partial<InviteCodeRow>;
-        };
-      };
-    };
-  }>(getSupabaseUrl(), getServiceRoleKey(), {
+export function createServiceSupabase(): SupabaseClient<Database> {
+  return createClient<Database>(getSupabaseUrl(), getServiceRoleKey(), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
