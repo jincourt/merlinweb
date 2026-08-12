@@ -1,6 +1,6 @@
 import { HeroGeometry } from "./components/hero-geometry";
 import { QuoteWizard } from "./components/quote-wizard";
-import { MerlinLogo } from "./components/ui";
+import { MerlineLogo } from "./components/ui";
 import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
@@ -58,7 +58,7 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
   return (
     <TiltCard className="rounded-2xl bg-white p-8 sm:p-10 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)]">
       <div className="flex items-start justify-between">
-        <MerlinLogo className="h-8 w-8" />
+        <MerlineLogo className="h-8 w-8" />
         <span className="t-mono">Série CH · 2026</span>
       </div>
 
@@ -101,7 +101,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
             <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
               <MotionDiv immediate>
-                <MerlinLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
+                <MerlineLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
                 <span className="t-mono-on-dark mt-6 block !text-white/90">
                   Offre promotionnelle
                 </span>

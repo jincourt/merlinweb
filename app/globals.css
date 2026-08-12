@@ -99,8 +99,8 @@ body {
 .logo-red {
   display: inline-block;
   background-color: var(--red);
-  -webkit-mask-image: url(/logo/merlin.gif);
-  mask-image: url(/logo/merlin.gif);
+  -webkit-mask-image: url(/logo/merline.gif);
+  mask-image: url(/logo/merline.gif);
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;

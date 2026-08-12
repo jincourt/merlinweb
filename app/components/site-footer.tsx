@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { MerlinLogo } from "./ui";
+import { MerlineLogo } from "./ui";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 
 export function SiteFooter() {
@@ -12,8 +12,8 @@ export function SiteFooter() {
         >
           <MotionItem>
             <div className="flex items-center gap-2.5">
-              <MerlinLogo className="h-8 w-8" red={false} />
-              <span className="t-mono-on-dark !text-white/85">Merlin</span>
+              <MerlineLogo className="h-8 w-8" red={false} />
+              <span className="t-mono-on-dark !text-white/85">Merline</span>
             </div>
             <p className="mt-3 flex items-center gap-1.5 t-mono-on-dark !text-[0.875rem] !text-white/70">
               <Star
@@ -76,7 +76,7 @@ export function SiteFooter() {
 
         <MotionDiv soft delay={0.15} className="mt-12 pt-6 sm:border-t sm:border-[var(--border-on-dark)] flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
           <p className="t-mono-on-dark !text-[0.625rem]">
-            © {new Date().getFullYear()} Merlin · Tous droits réservés
+            © {new Date().getFullYear()} Merline · Tous droits réservés
           </p>
           <div className="flex flex-col gap-1 sm:items-center">
             <a
