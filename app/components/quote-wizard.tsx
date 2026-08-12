@@ -16,7 +16,7 @@ import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
 
-const STEPS = ["Contact", "Options", "Envoi"] as const;
+const STEPS = ["Options", "Contact", "Envoi"] as const;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s()./-]{8,20}$/;
@@ -82,7 +82,7 @@ export function QuoteWizard() {
   }
 
   function next() {
-    if (step === 0) {
+    if (step === 1) {
       const hasEmail = email.trim().length > 0;
       const hasPhone = phone.trim().length > 0;
 
@@ -194,46 +194,8 @@ export function QuoteWizard() {
       </MotionStagger>
 
       <AnimatePresence mode="wait">
-        {/* Step 1 — Contact */}
+        {/* Step 1 — Options */}
         {step === 0 && (
-          <motion.div key="contact" {...stepTransition} className="space-y-5">
-            <div>
-              <label htmlFor="email" className="t-mono">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@entreprise.ch"
-                className="wizard-input mt-3"
-                autoComplete="email"
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="t-mono">
-                Téléphone
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="078 604 15 44"
-                className="wizard-input mt-3"
-                autoComplete="tel"
-              />
-            </div>
-            <p className="t-body text-sm">
-              Remplissez au moins un des deux champs pour que l&apos;on vous
-              recontacte.
-            </p>
-          </motion.div>
-        )}
-
-        {/* Step 2 — Options */}
-        {step === 1 && (
           <motion.div key="options" {...stepTransition}>
             <div className="flex items-end justify-between mb-6">
               <div>
@@ -309,6 +271,44 @@ export function QuoteWizard() {
                 );
               })}
             </MotionStagger>
+          </motion.div>
+        )}
+
+        {/* Step 2 — Contact */}
+        {step === 1 && (
+          <motion.div key="contact" {...stepTransition} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="t-mono">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@entreprise.ch"
+                className="wizard-input mt-3"
+                autoComplete="email"
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="t-mono">
+                Téléphone
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="078 604 15 44"
+                className="wizard-input mt-3"
+                autoComplete="tel"
+              />
+            </div>
+            <p className="t-body text-sm">
+              Remplissez au moins un des deux champs pour que l&apos;on vous
+              recontacte.
+            </p>
           </motion.div>
         )}
 
