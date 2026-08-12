@@ -16,6 +16,8 @@ export type SiteOption = {
   locked?: boolean;
   /** Affiche le prix sans préfixe « ~ » */
   exactPrice?: boolean;
+  /** Mention affichée avec * (ex. inclus par défaut) */
+  footnote?: string;
 };
 
 export const BASE_OFFER: SiteOption = {
@@ -25,6 +27,9 @@ export const BASE_OFFER: SiteOption = {
   price: 0,
   category: "site",
 };
+
+/** Prix catalogue avant promotion à 0 CHF */
+export const BASE_OFFER_ORIGINAL_PRICE = 690;
 
 /** Places restantes pour l'offre promotionnelle à 0 CHF */
 export const PROMO_SPOTS_TOTAL = 10;
@@ -64,6 +69,7 @@ export const SITE_OPTIONS: SiteOption[] = [
     defaultSelected: true,
     locked: true,
     exactPrice: true,
+    footnote: "Inclus par défaut",
   },
   {
     id: "devis",

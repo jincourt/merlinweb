@@ -4,6 +4,7 @@ import { MerlineLogo } from "./components/ui";
 import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
+import { PromoBasePrice } from "./components/promo-base-price";
 import { PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
 import { Mail, Phone } from "lucide-react";
 
@@ -35,7 +36,7 @@ const SPECS = [
   { key: "Réalisation", val: "Équipe professionnelle" },
   { key: "Délai", val: "7 jours ouvrables" },
   { key: "Suivi", val: "Inclus" },
-  { key: "Tarif", val: "0.- CHF", highlight: true },
+  { key: "Tarif", promo: true, highlight: true },
   { key: "Disponibilité", val: "Offre limitée" },
 ];
 
@@ -48,7 +49,11 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
           <span
             className={`text-[0.9375rem] font-medium ${s.highlight ? "text-red" : "text-black"}`}
           >
-            {s.val}
+            {"promo" in s && s.promo ? (
+              <PromoBasePrice variant="spec" />
+            ) : (
+              s.val
+            )}
           </span>
         </div>
       ))}
@@ -62,12 +67,7 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
         <span className="t-mono">Série CH · 2026</span>
       </div>
 
-      <p className="t-display mt-10 text-[clamp(4rem,14vw,7rem)] text-red leading-none">
-        0.-
-        <span className="ml-2 t-mono !text-[1rem] align-middle text-muted">
-          CHF
-        </span>
-      </p>
+      <PromoBasePrice variant="hero" />
 
       {animate ? (
         <MotionStagger className="mt-8" delay={0.1} stagger={0.06}>
@@ -78,7 +78,11 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
                 <span
                   className={`text-[0.9375rem] font-medium ${s.highlight ? "text-red" : "text-black"}`}
                 >
-                  {s.val}
+                  {"promo" in s && s.promo ? (
+                    <PromoBasePrice variant="spec" />
+                  ) : (
+                    s.val
+                  )}
                 </span>
               </div>
             </MotionItem>

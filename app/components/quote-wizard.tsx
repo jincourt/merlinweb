@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BASE_OFFER,
   DEFAULT_SELECTED_OPTION_IDS,
   OPTION_FILTERS,
   SITE_OPTIONS,
@@ -14,6 +13,7 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
+import { PromoBasePrice } from "./promo-base-price";
 
 const STEPS = ["Contact", "Options", "Envoi"] as const;
 
@@ -37,6 +37,21 @@ const stepTransition = {
   exit: { opacity: 0, y: -8 },
   transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
 };
+
+function OptionLabel({
+  label,
+  footnote,
+}: {
+  label: string;
+  footnote?: string;
+}) {
+  return (
+    <>
+      {label}
+      {footnote ? <span className="text-red">*</span> : null}
+    </>
+  );
+}
 
 export function QuoteWizard() {
   const [step, setStep] = useState(0);
@@ -222,7 +237,7 @@ export function QuoteWizard() {
               <div>
                 <p className="t-mono">Modules optionnels</p>
                 <p className="t-body mt-1 text-sm">
-                  Base incluse · {formatChf(BASE_OFFER.price)}
+                  Base incluse · <PromoBasePrice />
                 </p>
               </div>
               <p className="t-mono !text-black">
@@ -267,11 +282,19 @@ export function QuoteWizard() {
                       <div className="flex items-start justify-between gap-4">
                         <div className="text-left">
                           <p className="text-[0.9375rem] font-medium text-black">
-                            {option.label}
+                            <OptionLabel
+                              label={option.label}
+                              footnote={option.footnote}
+                            />
                           </p>
                           <p className="mt-1 text-sm text-muted leading-relaxed">
                             {option.description}
                           </p>
+                          {option.footnote ? (
+                            <p className="mt-2 text-xs text-muted leading-relaxed">
+                              <span className="text-red">*</span> {option.footnote}
+                            </p>
+                          ) : null}
                         </div>
                         {!option.hidePrice && (
                           <span className="t-mono shrink-0 !text-black">
@@ -296,13 +319,20 @@ export function QuoteWizard() {
               <div className="spec-row">
                 <span className="t-mono">Site de base</span>
                 <span className="text-[0.9375rem] font-medium text-black">
-                  {formatChf(BASE_OFFER.price)}
+                  <PromoBasePrice />
                 </span>
               </div>
               {selectedOptions.length > 0 ? (
                 selectedOptions.map((o) => (
                   <div key={o.id} className="spec-row">
-                    <span className="t-mono">{o.label}</span>
+                    <span className="t-mono">
+                      <OptionLabel label={o.label} footnote={o.footnote} />
+                      {o.footnote ? (
+                        <span className="mt-0.5 block !normal-case !tracking-normal text-[0.6875rem] text-muted">
+                          * {o.footnote}
+                        </span>
+                      ) : null}
+                    </span>
                     <span className="text-[0.9375rem] font-medium text-black">
                       {o.hidePrice
                         ? "—"
