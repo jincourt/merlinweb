@@ -1,3 +1,4 @@
+import { Star } from "lucide-react";
 import { MerlinLogo } from "./ui";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 
@@ -14,6 +15,16 @@ export function SiteFooter() {
               <MerlinLogo className="h-8 w-8" red={false} />
               <span className="t-mono-on-dark !text-white/85">Merlin</span>
             </div>
+            <p className="mt-3 flex items-center gap-1.5 t-mono-on-dark !text-[0.875rem] !text-white/70">
+              <Star
+                size={16}
+                strokeWidth={0}
+                fill="currentColor"
+                className="text-white/85"
+                aria-hidden="true"
+              />
+              4.8/5
+            </p>
             <p className="mt-4 text-sm text-white/45 leading-relaxed">
               Studio web suisse.
               <br />
