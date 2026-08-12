@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { MotionDiv } from "./motion";
 
@@ -33,13 +33,41 @@ const SLIDES = [
   },
 ] as const;
 
+const SWIPE_THRESHOLD = 48;
+
 export function BuilderCta() {
   const [index, setIndex] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const slide = SLIDES[index];
   const total = SLIDES.length;
 
   const goPrev = () => setIndex((i) => (i === 0 ? total - 1 : i - 1));
   const goNext = () => setIndex((i) => (i === total - 1 ? 0 : i + 1));
+
+  function onTouchStart(event: React.TouchEvent) {
+    touchStart.current = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+    };
+  }
+
+  function onTouchEnd(event: React.TouchEvent) {
+    if (!touchStart.current) return;
+
+    const deltaX = event.changedTouches[0].clientX - touchStart.current.x;
+    const deltaY = event.changedTouches[0].clientY - touchStart.current.y;
+    touchStart.current = null;
+
+    if (
+      Math.abs(deltaX) < SWIPE_THRESHOLD ||
+      Math.abs(deltaX) < Math.abs(deltaY)
+    ) {
+      return;
+    }
+
+    if (deltaX < 0) goNext();
+    else goPrev();
+  }
 
   return (
     <section className="bg-gray-dark text-white">
@@ -71,7 +99,14 @@ export function BuilderCta() {
           </div>
         </div>
 
-        <MotionDiv key={slide.id} immediate soft className="flex flex-col">
+        <MotionDiv
+          key={slide.id}
+          immediate
+          soft
+          className="flex flex-col touch-pan-y"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
           <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-white max-w-3xl">
             {slide.title.map((line) => (
               <span key={line} className="block">

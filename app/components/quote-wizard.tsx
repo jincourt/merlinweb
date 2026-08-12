@@ -206,7 +206,6 @@ export function QuoteWizard() {
                 placeholder="vous@entreprise.ch"
                 className="wizard-input mt-3"
                 autoComplete="email"
-                autoFocus
               />
             </div>
             <div>
