@@ -1,7 +1,8 @@
 import { HeroGeometry } from "./components/hero-geometry";
-import { QuoteWizard } from "./components/quote-wizard";
+import { DevisWizard } from "./components/devis-wizard";
 import { MerlinLogo } from "./components/ui";
 import { BuilderCta } from "./components/builder-cta";
+import { InviteSection } from "./components/invite-section";
 import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
@@ -182,7 +183,7 @@ export default function Home() {
               </MotionDiv>
 
               <MotionDiv delay={0.12}>
-                <QuoteWizard />
+                <DevisWizard />
               </MotionDiv>
             </div>
           </div>
@@ -228,6 +229,7 @@ export default function Home() {
       </main>
 
       <BuilderCta />
+      <InviteSection />
       <SiteFooter />
     </>
   );

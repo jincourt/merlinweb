@@ -489,3 +489,44 @@ body {
 .text-error {
   color: #9a3412;
 }
+
+/* ── Invite dialog ── */
+
+.invite-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.invite-dialog::backdrop {
+  background: transparent;
+}
+
+.invite-dialog-panel {
+  width: 100%;
+  max-width: 28rem;
+  flex-shrink: 0;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--white);
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 640px) {
+  .invite-dialog-panel {
+    padding: 2.25rem;
+  }
+}

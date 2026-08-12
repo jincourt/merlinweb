@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
+import { useInviteCode } from "./invite-provider";
 
 const STEPS = ["Contact", "Options", "Envoi"] as const;
 
@@ -54,6 +55,7 @@ function OptionLabel({
 }
 
 export function QuoteWizard() {
+  const inviteCode = useInviteCode();
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -119,6 +121,7 @@ export function QuoteWizard() {
           phone: phone.trim(),
           selectedIds: selected,
           message,
+          inviteCode: inviteCode ?? undefined,
         }),
       });
 
@@ -358,6 +361,14 @@ export function QuoteWizard() {
                   <span className="t-mono">Téléphone</span>
                   <span className="text-[0.9375rem] font-medium text-black">
                     {phone.trim()}
+                  </span>
+                </div>
+              )}
+              {inviteCode && (
+                <div className="spec-row">
+                  <span className="t-mono">Code invitation</span>
+                  <span className="text-[0.9375rem] font-medium font-mono tracking-wider text-red">
+                    {inviteCode}
                   </span>
                 </div>
               )}

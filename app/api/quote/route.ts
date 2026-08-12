@@ -6,22 +6,17 @@ import {
   formatChf,
   formatOptionPrice,
 } from "@/lib/options";
+import { isValidPhone, phonesMatch } from "@/lib/phone";
+import { createServiceSupabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const RECIPIENT = process.env.QUOTE_RECIPIENT_EMAIL ?? "wizhd55@gmail.com";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[+]?[\d\s()./-]{8,20}$/;
 
 function isValidEmail(value: string) {
   return EMAIL_RE.test(value);
-}
-
-function isValidPhone(value: string) {
-  if (!value) return false;
-  const digits = value.replace(/\D/g, "");
-  return PHONE_RE.test(value) && digits.length >= 8 && digits.length <= 15;
 }
 
 export async function POST(request: Request) {
@@ -34,6 +29,10 @@ export async function POST(request: Request) {
       : [];
     const message =
       typeof body.message === "string" ? body.message.trim() : "";
+    const inviteCode =
+      typeof body.inviteCode === "string"
+        ? body.inviteCode.trim().toUpperCase()
+        : "";
 
     if (!email && !phone) {
       return NextResponse.json(
@@ -52,6 +51,44 @@ export async function POST(request: Request) {
         { error: "Numéro de téléphone invalide." },
         { status: 400 },
       );
+    }
+
+    let inviteCodeHtml = "";
+
+    if (inviteCode) {
+      const supabase = createServiceSupabase();
+      const { data: inviteRow, error: inviteError } = await supabase
+        .from("code")
+        .select("code, phone")
+        .eq("code", inviteCode)
+        .maybeSingle();
+
+      if (inviteError) {
+        console.error("Invite code lookup error:", inviteError);
+        return NextResponse.json(
+          { error: "Impossible de vérifier le code d'invitation." },
+          { status: 500 },
+        );
+      }
+
+      if (!inviteRow) {
+        return NextResponse.json(
+          { error: "Code d'invitation invalide." },
+          { status: 400 },
+        );
+      }
+
+      if (phone && phonesMatch(phone, inviteRow.phone)) {
+        return NextResponse.json(
+          {
+            error:
+              "Vous ne pouvez pas utiliser votre propre code d'invitation.",
+          },
+          { status: 400 },
+        );
+      }
+
+      inviteCodeHtml = `<p style="margin:0 0 6px"><strong>Code d'invitation</strong></p><p style="margin:0 0 24px;font-family:monospace;font-size:16px;color:#da291c">${inviteRow.code}</p>`;
     }
 
     const validIds = [
@@ -108,6 +145,7 @@ export async function POST(request: Request) {
           <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#888">Merlin · Demande de devis</p>
           <h1 style="font-size:22px;font-weight:500;margin:16px 0 24px">Nouvelle configuration site</h1>
           ${contactHtml}
+          ${inviteCodeHtml}
           ${
             message
               ? `<p style="margin:0 0 6px"><strong>Message</strong></p><p style="margin:0 0 24px;color:#444">${message.replace(/</g, "&lt;")}</p>`
