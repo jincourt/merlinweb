@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { MerlinLogo } from "./ui";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
+import { LeaveNoteLink } from "./leave-note-link";
 
 export function SiteFooter() {
   return (
@@ -25,6 +26,7 @@ export function SiteFooter() {
               />
               4.8/5
             </p>
+            <LeaveNoteLink />
             <p className="mt-4 text-sm text-white/45 leading-relaxed">
               Studio web suisse.
               <br />

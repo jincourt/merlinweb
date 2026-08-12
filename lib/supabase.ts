@@ -8,6 +8,13 @@ export type InviteCodeRow = {
   created_at: string;
 };
 
+export type NoteRow = {
+  id: string;
+  stars: number;
+  comment: string;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -21,6 +28,17 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<InviteCodeRow>;
+        Relationships: [];
+      };
+      note: {
+        Row: NoteRow;
+        Insert: {
+          stars: number;
+          comment?: string;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<NoteRow>;
         Relationships: [];
       };
     };
