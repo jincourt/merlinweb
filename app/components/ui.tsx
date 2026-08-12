@@ -1,4 +1,4 @@
-function MerlineLogo({
+function MerlinLogo({
   className = "h-8 w-8",
   red = true,
 }: {
@@ -9,7 +9,7 @@ function MerlineLogo({
     return (
       <img
         src="/logo/merline.gif"
-        alt="Merline"
+        alt="Merlin"
         className={`shrink-0 mix-blend-lighten ${className}`}
       />
     );
@@ -19,7 +19,7 @@ function MerlineLogo({
     <span
       className={`logo-red shrink-0 ${className}`}
       role="img"
-      aria-label="Merline"
+      aria-label="Merlin"
     />
   );
 }
@@ -52,4 +52,4 @@ export function Marquee() {
   );
 }
 
-export { CrossMark, MerlineLogo };
+export { CrossMark, MerlinLogo };

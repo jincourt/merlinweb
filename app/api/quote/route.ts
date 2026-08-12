@@ -76,7 +76,7 @@ export async function POST(request: Request) {
 
     const resend = new Resend(apiKey);
     const from =
-      process.env.RESEND_FROM_EMAIL ?? "Merline <onboarding@resend.dev>";
+      process.env.RESEND_FROM_EMAIL ?? "Merlin <onboarding@resend.dev>";
 
     const optionsHtml =
       selectedOptions.length > 0
@@ -102,10 +102,10 @@ export async function POST(request: Request) {
       from,
       to: RECIPIENT,
       ...(email ? { replyTo: email } : {}),
-      subject: `[Merline] Nouvelle demande — ${contactSubject}`,
+      subject: `[Merlin] Nouvelle demande — ${contactSubject}`,
       html: `
         <div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;color:#111">
-          <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#888">Merline · Demande de devis</p>
+          <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#888">Merlin · Demande de devis</p>
           <h1 style="font-size:22px;font-weight:500;margin:16px 0 24px">Nouvelle configuration site</h1>
           ${contactHtml}
           ${

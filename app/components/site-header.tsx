@@ -18,7 +18,7 @@ export function SiteHeader() {
       >
         <Link href="/" className="flex items-center gap-2.5 group">
           <CrossMark className="text-red" />
-          <span className="t-mono !text-black !text-[0.625rem]">Merline</span>
+          <span className="t-mono !text-black !text-[0.625rem]">Merlin</span>
         </Link>
 
         <MotionStagger

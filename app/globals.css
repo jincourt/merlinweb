@@ -176,6 +176,27 @@ body {
   opacity: 0.5;
 }
 
+.btn-indigo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #4f46e5;
+  color: var(--white);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.875rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-indigo:hover:not(:disabled) {
+  background: #4338ca;
+}
+
 .btn-white {
   display: inline-flex;
   align-items: center;

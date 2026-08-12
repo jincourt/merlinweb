@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Merline — Studio web suisse",
+  title: "Merlin — Studio web suisse",
   description:
     "Agence web suisse. Sites internet personnalisés, conçus par des professionnels. Livraison 7 jours. Offre limitée à 0 CHF.",
   openGraph: {
-    title: "Merline — Studio web suisse",
+    title: "Merlin — Studio web suisse",
     description:
       "Sites internet sur mesure pour indépendants et PME. Design suisse, livraison 7 jours.",
     locale: "fr_CH",

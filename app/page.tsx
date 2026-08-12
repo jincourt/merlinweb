@@ -1,6 +1,7 @@
 import { HeroGeometry } from "./components/hero-geometry";
 import { QuoteWizard } from "./components/quote-wizard";
-import { MerlineLogo } from "./components/ui";
+import { MerlinLogo } from "./components/ui";
+import { BuilderCta } from "./components/builder-cta";
 import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
@@ -16,16 +17,11 @@ const PROCESS = [
   },
   {
     n: "02",
-    title: "Conception",
-    desc: "Maquette sur mesure, validée avec vous avant production.",
-  },
-  {
-    n: "03",
     title: "Développement",
     desc: "Site responsive, optimisé et prêt à être mis en ligne.",
   },
   {
-    n: "04",
+    n: "03",
     title: "Livraison",
     desc: "Remise des fichiers et accompagnement pour la mise en ligne.",
   },
@@ -63,7 +59,7 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
   return (
     <TiltCard className="rounded-2xl bg-white p-8 sm:p-10 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)]">
       <div className="flex items-start justify-between">
-        <MerlineLogo className="h-8 w-8" />
+        <MerlinLogo className="h-8 w-8" />
         <span className="t-mono">Série CH · 2026</span>
       </div>
 
@@ -105,7 +101,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
             <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
               <MotionDiv immediate>
-                <MerlineLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
+                <MerlinLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
                 <span className="t-mono-on-dark mt-6 block !text-white/90">
                   Offre promotionnelle
                 </span>
@@ -146,8 +142,10 @@ export default function Home() {
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-start">
               <MotionDiv>
-                <span className="t-mono">Configurez votre site</span>
-                <h2 className="t-display mt-4 text-[clamp(2.5rem,6vw,4.5rem)] text-black">
+                <span className="t-mono block !text-[1rem] !text-black/70">
+                  Configurez votre site
+                </span>
+                <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2.5rem,6vw,4.5rem)] text-black">
                   Choisissez vos
                   <br />
                   modules
@@ -193,20 +191,19 @@ export default function Home() {
         {/* ── PROCESSUS — gris foncé / blanc ── */}
         <section id="processus" className="bg-gray-dark text-white">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-6 sm:pb-8">
-            <MotionDiv className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <span className="t-mono-on-dark">Méthode</span>
-                <h2 className="t-display mt-4 text-[clamp(2rem,5vw,3.25rem)] text-white">
-                  De l&apos;idée au site,
-                  <br />
-                  en une semaine
-                </h2>
-              </div>
-              <span className="t-mono-on-dark">04 étapes</span>
+            <MotionDiv>
+              <span className="t-mono-on-dark block !text-[1rem] !text-white/70">
+                Méthode
+              </span>
+              <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-white">
+                De l&apos;idée au site,
+                <br />
+                en une semaine
+              </h2>
             </MotionDiv>
 
             <MotionStagger
-              className="rule-on-dark mt-14 grid sm:grid-cols-2 lg:grid-cols-4"
+              className="rule-on-dark mt-14 grid sm:grid-cols-2 lg:grid-cols-3"
               delay={0.08}
               stagger={0.1}
             >
@@ -230,6 +227,7 @@ export default function Home() {
         </section>
       </main>
 
+      <BuilderCta />
       <SiteFooter />
     </>
   );
