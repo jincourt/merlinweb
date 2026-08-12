@@ -3,7 +3,7 @@ import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-gray-dark text-white">
+    <footer className="bg-gray-dark text-white max-sm:border-t-0">
       <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-8 pb-14">
         <MotionStagger
           className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4"
@@ -63,7 +63,7 @@ export function SiteFooter() {
           </MotionItem>
         </MotionStagger>
 
-        <MotionDiv soft delay={0.15} className="rule-on-dark mt-12 pt-6 flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+        <MotionDiv soft delay={0.15} className="mt-12 pt-6 sm:border-t sm:border-[var(--border-on-dark)] flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
           <p className="t-mono-on-dark !text-[0.625rem]">
             © {new Date().getFullYear()} Merlin · Tous droits réservés
           </p>

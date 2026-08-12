@@ -1,5 +1,6 @@
 import {
   BASE_OFFER,
+  LOCKED_OPTION_IDS,
   SITE_OPTIONS,
   computeTotal,
   formatChf,
@@ -53,9 +54,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const validIds = selectedIds.filter((id) =>
-      SITE_OPTIONS.some((o) => o.id === id),
-    );
+    const validIds = [
+      ...new Set([
+        ...LOCKED_OPTION_IDS,
+        ...selectedIds.filter((id) => SITE_OPTIONS.some((o) => o.id === id)),
+      ]),
+    ];
 
     const selectedOptions = SITE_OPTIONS.filter((o) =>
       validIds.includes(o.id),
@@ -79,7 +83,7 @@ export async function POST(request: Request) {
         ? selectedOptions
             .map(
               (o) =>
-                `<tr><td style="padding:8px 0;border-bottom:1px solid #eee">${o.label}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right">${o.hidePrice ? "—" : formatOptionPrice(o, { approximate: true })}</td></tr>`,
+                `<tr><td style="padding:8px 0;border-bottom:1px solid #eee">${o.label}</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right">${o.hidePrice ? "—" : formatOptionPrice(o)}</td></tr>`,
             )
             .join("")
         : `<tr><td colspan="2" style="padding:8px 0;color:#666">Aucune option supplémentaire</td></tr>`;

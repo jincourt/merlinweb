@@ -5,6 +5,12 @@ export type SiteOption = {
   price: number;
   priceSuffix?: string;
   hidePrice?: boolean;
+  /** Pré-sélectionné à l'ouverture du devis */
+  defaultSelected?: boolean;
+  /** Ne peut pas être retiré par l'utilisateur */
+  locked?: boolean;
+  /** Affiche le prix sans préfixe « ~ » */
+  exactPrice?: boolean;
 };
 
 export const BASE_OFFER: SiteOption = {
@@ -23,7 +29,7 @@ export const SITE_OPTIONS: SiteOption[] = [
   {
     id: "catalogue",
     label: "Catalogue produits & services",
-    description: "Présentation structurée de votre offre avec filtres.",
+    description: "Présentation structurée de votre offre avec filtres, CMS modifiable.",
     price: 1290,
   },
   {
@@ -38,6 +44,9 @@ export const SITE_OPTIONS: SiteOption[] = [
     description: "Adresse web et hébergement sécurisé pour votre site.",
     price: 200,
     priceSuffix: "/ an",
+    defaultSelected: true,
+    locked: true,
+    exactPrice: true,
   },
   {
     id: "devis",
@@ -114,6 +123,14 @@ export const SITE_OPTIONS: SiteOption[] = [
   },
 ];
 
+export const DEFAULT_SELECTED_OPTION_IDS = SITE_OPTIONS.filter(
+  (o) => o.defaultSelected,
+).map((o) => o.id);
+
+export const LOCKED_OPTION_IDS = SITE_OPTIONS.filter((o) => o.locked).map(
+  (o) => o.id,
+);
+
 export function formatChf(
   amount: number,
   { approximate = false }: { approximate?: boolean } = {},
@@ -125,7 +142,7 @@ export function formatChf(
 
 export function formatOptionPrice(
   option: SiteOption,
-  { approximate = false }: { approximate?: boolean } = {},
+  { approximate = !option.exactPrice }: { approximate?: boolean } = {},
 ): string {
   const price = formatChf(option.price, { approximate });
   return option.priceSuffix ? `${price}${option.priceSuffix}` : price;

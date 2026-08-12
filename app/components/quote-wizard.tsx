@@ -2,6 +2,7 @@
 
 import {
   BASE_OFFER,
+  DEFAULT_SELECTED_OPTION_IDS,
   SITE_OPTIONS,
   computeTotal,
   formatChf,
@@ -38,7 +39,7 @@ export function QuoteWizard() {
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED_OPTION_IDS);
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -47,6 +48,9 @@ export function QuoteWizard() {
   const selectedOptions = SITE_OPTIONS.filter((o) => selected.includes(o.id));
 
   function toggleOption(id: string) {
+    const option = SITE_OPTIONS.find((o) => o.id === id);
+    if (option?.locked) return;
+
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
@@ -228,12 +232,15 @@ export function QuoteWizard() {
             >
               {SITE_OPTIONS.map((option) => {
                 const isSelected = selected.includes(option.id);
+                const isLocked = option.locked === true;
                 return (
                   <MotionItem key={option.id} soft>
                     <button
                       type="button"
                       onClick={() => toggleOption(option.id)}
-                      className={`option-card w-full ${isSelected ? "option-card-selected" : ""}`}
+                      aria-pressed={isSelected}
+                      aria-disabled={isLocked}
+                      className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="text-left">
@@ -246,7 +253,7 @@ export function QuoteWizard() {
                         </div>
                         {!option.hidePrice && (
                           <span className="t-mono shrink-0 !text-black">
-                            {formatOptionPrice(option, { approximate: true })}
+                            {formatOptionPrice(option)}
                           </span>
                         )}
                       </div>
@@ -277,7 +284,7 @@ export function QuoteWizard() {
                     <span className="text-[0.9375rem] font-medium text-black">
                       {o.hidePrice
                         ? "—"
-                        : formatOptionPrice(o, { approximate: true })}
+                        : formatOptionPrice(o)}
                     </span>
                   </div>
                 ))

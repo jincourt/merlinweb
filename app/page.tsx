@@ -180,7 +180,7 @@ export default function Home() {
             >
               {PROCESS.map((step) => (
                 <MotionItem key={step.n}>
-                  <div className="border-b border-[var(--border-on-dark)] py-8 sm:py-10 lg:border-b-0 lg:border-r lg:last:border-r-0 lg:px-8 lg:first:pl-0">
+                  <div className="border-b border-[var(--border-on-dark)] py-8 sm:py-10 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 lg:px-8 lg:first:pl-0">
                     <span className="t-mono-on-dark !text-[2rem] !tracking-tight !text-white/10">
                       {step.n}
                     </span>
