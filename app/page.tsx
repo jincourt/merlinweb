@@ -39,6 +39,58 @@ const SPECS = [
   { key: "Disponibilité", val: "Offre limitée" },
 ];
 
+function OfferPriceCard({ animate = false }: { animate?: boolean }) {
+  const specs = (
+    <>
+      {SPECS.map((s) => (
+        <div key={s.key} className="spec-row last:border-b-0">
+          <span className="t-mono">{s.key}</span>
+          <span
+            className={`text-[0.9375rem] font-medium ${s.highlight ? "text-red" : "text-black"}`}
+          >
+            {s.val}
+          </span>
+        </div>
+      ))}
+    </>
+  );
+
+  return (
+    <TiltCard className="rounded-2xl bg-white p-8 sm:p-10 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)]">
+      <div className="flex items-start justify-between">
+        <MerlinLogo className="h-8 w-8" />
+        <span className="t-mono">Série CH · 2026</span>
+      </div>
+
+      <p className="t-display mt-10 text-[clamp(4rem,14vw,7rem)] text-red leading-none">
+        0.-
+        <span className="ml-2 t-mono !text-[1rem] align-middle text-muted">
+          CHF
+        </span>
+      </p>
+
+      {animate ? (
+        <MotionStagger className="mt-8" delay={0.1} stagger={0.06}>
+          {SPECS.map((s) => (
+            <MotionItem key={s.key} soft>
+              <div className="spec-row last:border-b-0">
+                <span className="t-mono">{s.key}</span>
+                <span
+                  className={`text-[0.9375rem] font-medium ${s.highlight ? "text-red" : "text-black"}`}
+                >
+                  {s.val}
+                </span>
+              </div>
+            </MotionItem>
+          ))}
+        </MotionStagger>
+      ) : (
+        <div className="mt-8">{specs}</div>
+      )}
+    </TiltCard>
+  );
+}
+
 export default function Home() {
   return (
     <>
@@ -75,35 +127,11 @@ export default function Home() {
                 </div>
               </MotionDiv>
 
-              <MotionDiv delay={0.15}>
-                <TiltCard className="rounded-2xl bg-white p-8 sm:p-10 text-black shadow-[0_24px_60px_-28px_rgba(0,0,0,0.45)]">
-                  <div className="flex items-start justify-between">
-                    <MerlinLogo className="h-8 w-8" />
-                    <span className="t-mono">Série CH · 2026</span>
-                  </div>
-
-                  <p className="t-display mt-10 text-[clamp(4rem,14vw,7rem)] text-red leading-none">
-                    0.-
-                    <span className="ml-2 t-mono !text-[1rem] align-middle text-muted">
-                      CHF
-                    </span>
-                  </p>
-
-                  <MotionStagger className="mt-8" delay={0.1} stagger={0.06}>
-                    {SPECS.map((s) => (
-                      <MotionItem key={s.key} soft>
-                        <div className="spec-row last:border-b-0">
-                          <span className="t-mono">{s.key}</span>
-                          <span
-                            className={`text-[0.9375rem] font-medium ${s.highlight ? "text-red" : "text-black"}`}
-                          >
-                            {s.val}
-                          </span>
-                        </div>
-                      </MotionItem>
-                    ))}
-                  </MotionStagger>
-                </TiltCard>
+              <div className="sm:hidden">
+                <OfferPriceCard />
+              </div>
+              <MotionDiv delay={0.15} className="hidden sm:block">
+                <OfferPriceCard animate />
               </MotionDiv>
             </div>
           </div>
