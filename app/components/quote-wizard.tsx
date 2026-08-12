@@ -2,13 +2,12 @@
 
 import {
   DEFAULT_SELECTED_OPTION_IDS,
-  OPTION_FILTERS,
+  OPTION_CATEGORIES,
   SITE_OPTIONS,
   computeTotal,
   filterOptionsByCategory,
   formatChf,
   formatOptionPrice,
-  type OptionFilterId,
 } from "@/lib/options";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
@@ -17,6 +16,8 @@ import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
 
 const STEPS = ["Options", "Contact", "Envoi"] as const;
+const CONTACT_STEP = 1;
+const ENVOI_STEP = 2;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s()./-]{8,20}$/;
@@ -54,23 +55,124 @@ function OptionLabel({
   );
 }
 
+function OptionCategoryTabs({ activeIndex }: { activeIndex: number }) {
+  return (
+    <div className="option-filters mb-4">
+      {OPTION_CATEGORIES.map((category, index) => (
+        <span
+          key={category.id}
+          aria-current={index === activeIndex ? "step" : undefined}
+          className={`option-filter pointer-events-none ${
+            index === activeIndex ? "option-filter-active" : ""
+          }`}
+        >
+          {category.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function OptionsPanel({
+  categoryIndex,
+  selected,
+  total,
+  onToggle,
+}: {
+  categoryIndex: number;
+  selected: string[];
+  total: number;
+  onToggle: (id: string) => void;
+}) {
+  const category = OPTION_CATEGORIES[categoryIndex];
+  const categoryOptions = useMemo(
+    () => filterOptionsByCategory(category.id),
+    [category.id],
+  );
+
+  return (
+    <motion.div key={category.id} {...stepTransition}>
+      <div className="flex items-end justify-between mb-6">
+        <div>
+          <p className="t-mono">Modules optionnels</p>
+          <p className="t-body mt-1 text-sm">
+            Base incluse · <PromoBasePrice />
+          </p>
+        </div>
+        <p className="t-mono !text-black">
+          Total ·{" "}
+          <span className="text-red">
+            {formatChf(total, { approximate: true })}
+          </span>
+        </p>
+      </div>
+
+      <OptionCategoryTabs activeIndex={categoryIndex} />
+
+      <MotionStagger
+        immediate
+        className="grid gap-2 max-h-[420px] overflow-y-auto pr-1"
+        stagger={0.04}
+      >
+        {categoryOptions.map((option) => {
+          const isSelected = selected.includes(option.id);
+          const isLocked = option.locked === true;
+          return (
+            <MotionItem key={option.id} soft>
+              <button
+                type="button"
+                onClick={() => onToggle(option.id)}
+                aria-pressed={isSelected}
+                aria-disabled={isLocked}
+                className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="text-left">
+                    <p className="text-[0.9375rem] font-medium text-black">
+                      <OptionLabel
+                        label={option.label}
+                        footnote={option.footnote}
+                      />
+                    </p>
+                    <p className="mt-1 text-sm text-muted leading-relaxed">
+                      {option.description}
+                    </p>
+                    {option.footnote ? (
+                      <p className="mt-2 text-xs text-muted leading-relaxed">
+                        <span className="text-red">*</span> {option.footnote}
+                      </p>
+                    ) : null}
+                  </div>
+                  {!option.hidePrice && (
+                    <span className="t-mono shrink-0 !text-black">
+                      {formatOptionPrice(option)}
+                    </span>
+                  )}
+                </div>
+              </button>
+            </MotionItem>
+          );
+        })}
+      </MotionStagger>
+    </motion.div>
+  );
+}
+
 export function QuoteWizard() {
   const inviteCode = useInviteCode();
   const [step, setStep] = useState(0);
+  const [optionPhase, setOptionPhase] = useState(0);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED_OPTION_IDS);
-  const [categoryFilter, setCategoryFilter] = useState<OptionFilterId>("all");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   const total = useMemo(() => computeTotal(selected), [selected]);
   const selectedOptions = SITE_OPTIONS.filter((o) => selected.includes(o.id));
-  const filteredOptions = useMemo(
-    () => filterOptionsByCategory(categoryFilter),
-    [categoryFilter],
-  );
+  const isLastOptionPhase =
+    optionPhase >= OPTION_CATEGORIES.length - 1;
 
   function toggleOption(id: string) {
     const option = SITE_OPTIONS.find((o) => o.id === id);
@@ -82,7 +184,13 @@ export function QuoteWizard() {
   }
 
   function next() {
-    if (step === 1) {
+    if (step === 0 && !isLastOptionPhase) {
+      setErrorMsg("");
+      setOptionPhase((p) => p + 1);
+      return;
+    }
+
+    if (step === CONTACT_STEP) {
       const hasEmail = email.trim().length > 0;
       const hasPhone = phone.trim().length > 0;
 
@@ -99,12 +207,25 @@ export function QuoteWizard() {
         return;
       }
     }
+
     setErrorMsg("");
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
   function back() {
     setErrorMsg("");
+
+    if (step === CONTACT_STEP) {
+      setStep(0);
+      setOptionPhase(OPTION_CATEGORIES.length - 1);
+      return;
+    }
+
+    if (step === 0 && optionPhase > 0) {
+      setOptionPhase((p) => p - 1);
+      return;
+    }
+
     setStep((s) => Math.max(s - 1, 0));
   }
 
@@ -166,9 +287,10 @@ export function QuoteWizard() {
     );
   }
 
+  const showBack = step > 0 || (step === 0 && optionPhase > 0);
+
   return (
     <div className="wizard-panel">
-      {/* Step indicator */}
       <MotionStagger
         immediate
         className="flex items-center gap-2 mb-8"
@@ -194,88 +316,16 @@ export function QuoteWizard() {
       </MotionStagger>
 
       <AnimatePresence mode="wait">
-        {/* Step 1 — Options */}
         {step === 0 && (
-          <motion.div key="options" {...stepTransition}>
-            <div className="flex items-end justify-between mb-6">
-              <div>
-                <p className="t-mono">Modules optionnels</p>
-                <p className="t-body mt-1 text-sm">
-                  Base incluse · <PromoBasePrice />
-                </p>
-              </div>
-              <p className="t-mono !text-black">
-                Total ·{" "}
-                <span className="text-red">
-                  {formatChf(total, { approximate: true })}
-                </span>
-              </p>
-            </div>
-
-            <div className="option-filters mb-4">
-              {OPTION_FILTERS.map((filter) => (
-                <button
-                  key={filter.id}
-                  type="button"
-                  onClick={() => setCategoryFilter(filter.id)}
-                  aria-pressed={categoryFilter === filter.id}
-                  className={`option-filter ${categoryFilter === filter.id ? "option-filter-active" : ""}`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-
-            <MotionStagger
-              immediate
-              className="grid gap-2 max-h-[420px] overflow-y-auto pr-1"
-              stagger={0.04}
-            >
-              {filteredOptions.map((option) => {
-                const isSelected = selected.includes(option.id);
-                const isLocked = option.locked === true;
-                return (
-                  <MotionItem key={option.id} soft>
-                    <button
-                      type="button"
-                      onClick={() => toggleOption(option.id)}
-                      aria-pressed={isSelected}
-                      aria-disabled={isLocked}
-                      className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="text-left">
-                          <p className="text-[0.9375rem] font-medium text-black">
-                            <OptionLabel
-                              label={option.label}
-                              footnote={option.footnote}
-                            />
-                          </p>
-                          <p className="mt-1 text-sm text-muted leading-relaxed">
-                            {option.description}
-                          </p>
-                          {option.footnote ? (
-                            <p className="mt-2 text-xs text-muted leading-relaxed">
-                              <span className="text-red">*</span> {option.footnote}
-                            </p>
-                          ) : null}
-                        </div>
-                        {!option.hidePrice && (
-                          <span className="t-mono shrink-0 !text-black">
-                            {formatOptionPrice(option)}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  </MotionItem>
-                );
-              })}
-            </MotionStagger>
-          </motion.div>
+          <OptionsPanel
+            categoryIndex={optionPhase}
+            selected={selected}
+            total={total}
+            onToggle={toggleOption}
+          />
         )}
 
-        {/* Step 2 — Contact */}
-        {step === 1 && (
+        {step === CONTACT_STEP && (
           <motion.div key="contact" {...stepTransition} className="space-y-5">
             <div>
               <label htmlFor="email" className="t-mono">
@@ -312,8 +362,7 @@ export function QuoteWizard() {
           </motion.div>
         )}
 
-        {/* Step 3 — Récap */}
-        {step === 2 && (
+        {step === ENVOI_STEP && (
           <motion.div key="recap" {...stepTransition}>
             <p className="t-mono">Récapitulatif</p>
 
@@ -336,9 +385,7 @@ export function QuoteWizard() {
                       ) : null}
                     </span>
                     <span className="text-[0.9375rem] font-medium text-black">
-                      {o.hidePrice
-                        ? "—"
-                        : formatOptionPrice(o)}
+                      {o.hidePrice ? "—" : formatOptionPrice(o)}
                     </span>
                   </div>
                 ))
@@ -403,14 +450,13 @@ export function QuoteWizard() {
         </MotionDiv>
       )}
 
-      {/* Navigation */}
       <MotionDiv
         immediate
         soft
         delay={0.15}
         className="flex items-center justify-between mt-8 pt-6 rule"
       >
-        {step > 0 ? (
+        {showBack ? (
           <button type="button" onClick={back} className="btn-outline">
             Retour
           </button>

@@ -43,6 +43,13 @@ export const OPTION_FILTERS: { id: OptionFilterId; label: string }[] = [
   { id: "identite", label: "Identité" },
 ];
 
+/** Parcours wizard — une catégorie par écran, sans onglet « Tout » */
+export const OPTION_CATEGORIES: { id: OptionCategory; label: string }[] = [
+  { id: "site", label: "Site web" },
+  { id: "marketing", label: "Marketing" },
+  { id: "identite", label: "Identité" },
+];
+
 export const SITE_OPTIONS: SiteOption[] = [
   // ── Site web ──
   {
