@@ -54,9 +54,9 @@ export async function POST(request: Request) {
     }
 
     let inviteCodeHtml = "";
+    const supabase = createServiceSupabase();
 
     if (inviteCode) {
-      const supabase = createServiceSupabase();
       const { data: inviteRow, error: inviteError } = await supabase
         .from("code")
         .select("code, phone")
@@ -102,6 +102,23 @@ export async function POST(request: Request) {
       validIds.includes(o.id),
     );
     const total = computeTotal(validIds);
+
+    const { error: dbError } = await supabase.from("quote").insert({
+      email,
+      phone,
+      selected_ids: validIds,
+      message,
+      invite_code: inviteCode,
+      total,
+    });
+
+    if (dbError) {
+      console.error("Quote insert error:", dbError);
+      return NextResponse.json(
+        { error: "Impossible d'enregistrer la demande." },
+        { status: 500 },
+      );
+    }
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {

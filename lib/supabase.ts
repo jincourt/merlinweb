@@ -15,6 +15,23 @@ export type NoteRow = {
   created_at: string;
 };
 
+export type VisitRow = {
+  id: string;
+  path: string;
+  created_at: string;
+};
+
+export type QuoteRow = {
+  id: string;
+  email: string;
+  phone: string;
+  selected_ids: string[];
+  message: string;
+  invite_code: string;
+  total: number;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -39,6 +56,31 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<NoteRow>;
+        Relationships: [];
+      };
+      visit: {
+        Row: VisitRow;
+        Insert: {
+          path?: string;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<VisitRow>;
+        Relationships: [];
+      };
+      quote: {
+        Row: QuoteRow;
+        Insert: {
+          email?: string;
+          phone?: string;
+          selected_ids?: string[];
+          message?: string;
+          invite_code?: string;
+          total?: number;
+          id?: string;
+          created_at?: string;
+        };
+        Update: Partial<QuoteRow>;
         Relationships: [];
       };
     };

@@ -37,10 +37,10 @@ export function SiteFooter() {
           <MotionItem>
             <p className="t-mono-on-dark">Menu</p>
             <ul className="mt-4 space-y-2">
-              {["Offre", "Processus", "Devis"].map((l) => (
+              {["Offre", "Modules", "Devis"].map((l) => (
                 <li key={l}>
                   <a
-                    href={`#${l === "Devis" ? "devis" : l.toLowerCase()}`}
+                    href={`#${l === "Devis" ? "devis" : l === "Modules" ? "processus" : l.toLowerCase()}`}
                     className="tag tag-on-dark"
                   >
                     {l}

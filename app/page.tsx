@@ -7,25 +7,15 @@ import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
 import { PromoBasePrice } from "./components/promo-base-price";
-import { PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
+import { VisitTracker } from "./components/visit-tracker";
+import { CATEGORY_META, PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
 import { Mail, Phone } from "lucide-react";
+import Link from "next/link";
 
-const PROCESS = [
-  {
-    n: "01",
-    title: "Brief",
-    desc: "Échange sur votre activité, vos objectifs et votre identité.",
-  },
-  {
-    n: "02",
-    title: "Développement",
-    desc: "Site responsive, optimisé et prêt à être mis en ligne.",
-  },
-  {
-    n: "03",
-    title: "Livraison",
-    desc: "Remise des fichiers et accompagnement pour la mise en ligne.",
-  },
+const MODULES = [
+  { n: "01", ...CATEGORY_META.site },
+  { n: "02", ...CATEGORY_META.marketing },
+  { n: "03", ...CATEGORY_META.identite },
 ];
 
 const SPECS = [
@@ -95,6 +85,7 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
 export default function Home() {
   return (
     <>
+      <VisitTracker />
       <main>
         {/* ── OFFRE — rouge / blanc ── */}
         <section id="offre" className="relative overflow-hidden bg-red text-white">
@@ -194,12 +185,12 @@ export default function Home() {
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-6 sm:pb-8">
             <MotionDiv>
               <span className="t-mono-on-dark block !text-[1rem] !text-white/70">
-                Méthode
+                Modules
               </span>
               <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-white">
-                De l&apos;idée au site,
+                Trois catégories,
                 <br />
-                en une semaine
+                à la carte
               </h2>
             </MotionDiv>
 
@@ -208,18 +199,24 @@ export default function Home() {
               delay={0.08}
               stagger={0.1}
             >
-              {PROCESS.map((step) => (
+              {MODULES.map((step) => (
                 <MotionItem key={step.n}>
-                  <div className="border-b border-[var(--border-on-dark)] py-8 sm:py-10 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 lg:px-8 lg:first:pl-0">
+                  <div className="border-b border-[var(--border-on-dark)] py-8 sm:py-10 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 lg:px-8 lg:first:pl-0 flex flex-col h-full">
                     <span className="t-mono-on-dark !text-[2rem] !tracking-tight !text-white/10">
                       {step.n}
                     </span>
                     <h3 className="mt-4 text-[0.9375rem] font-medium text-white">
-                      {step.title}
+                      {step.label}
                     </h3>
-                    <p className="mt-2 text-sm text-white/45 leading-relaxed">
-                      {step.desc}
+                    <p className="mt-2 text-sm text-white/45 leading-relaxed flex-1">
+                      {step.summary}
                     </p>
+                    <Link
+                      href={`/options/${step.slug}`}
+                      className="btn-outline-white mt-6 w-fit !text-[0.625rem]"
+                    >
+                      Voir les options
+                    </Link>
                   </div>
                 </MotionItem>
               ))}
