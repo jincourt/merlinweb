@@ -1,4 +1,4 @@
-import { Eye, Gift, Users } from "lucide-react";
+import { CheckSquare, Eye, FileText, Gift, Receipt, Users } from "lucide-react";
 import { getAdminStats } from "@/lib/admin-data";
 
 export const dynamic = "force-dynamic";
@@ -10,13 +10,13 @@ export default async function AdminHomePage() {
     {
       label: "Visites",
       value: stats.visits,
-      hint: "Visiteurs uniques identifiés sur le site",
+      hint: "Visiteurs uniques",
       icon: Eye,
     },
     {
       label: "Partenaires",
       value: stats.partners,
-      hint: "Numéros enregistrés pour le programme 50.-",
+      hint: "Numéros enregistrés",
       icon: Gift,
     },
     {
@@ -24,6 +24,24 @@ export default async function AdminHomePage() {
       value: stats.clients,
       hint: "Demandes de devis soumises",
       icon: Users,
+    },
+    {
+      label: "Devis",
+      value: stats.devis,
+      hint: "Devis créés dans l'admin",
+      icon: FileText,
+    },
+    {
+      label: "Factures",
+      value: stats.factures,
+      hint: "Factures émises",
+      icon: Receipt,
+    },
+    {
+      label: "Tâches",
+      value: stats.tasks,
+      hint: "Tâches sur le tableau",
+      icon: CheckSquare,
     },
   ];
 
@@ -35,8 +53,7 @@ export default async function AdminHomePage() {
           Vue d&apos;ensemble
         </h1>
         <p className="t-body mt-3 max-w-xl">
-          Statistiques globales du site Merlin — visites, partenaires
-          parrainage et demandes clients.
+          Statistiques globales — visites, clients, documents et tâches.
         </p>
       </header>
 

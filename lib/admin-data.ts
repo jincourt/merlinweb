@@ -15,27 +15,51 @@ export type AdminStats = {
   partners: number;
   clients: number;
   notes: number;
+  devis: number;
+  factures: number;
+  tasks: number;
 };
 
 export async function getAdminStats(): Promise<AdminStats> {
   try {
     const supabase = createServiceSupabase();
 
-    const [visitors, partners, clients, notes] = await Promise.all([
-      supabase.from("visitor").select("id", { count: "exact", head: true }),
-      supabase.from("code").select("id", { count: "exact", head: true }),
-      supabase.from("quote").select("id", { count: "exact", head: true }),
-      supabase.from("note").select("id", { count: "exact", head: true }),
-    ]);
+    const [visitors, partners, clients, notes, devis, factures, tasks] =
+      await Promise.all([
+        supabase.from("visitor").select("id", { count: "exact", head: true }),
+        supabase.from("code").select("id", { count: "exact", head: true }),
+        supabase.from("quote").select("id", { count: "exact", head: true }),
+        supabase.from("note").select("id", { count: "exact", head: true }),
+        supabase
+          .from("invoice")
+          .select("id", { count: "exact", head: true })
+          .eq("type", "devis"),
+        supabase
+          .from("invoice")
+          .select("id", { count: "exact", head: true })
+          .eq("type", "facture"),
+        supabase.from("task").select("id", { count: "exact", head: true }),
+      ]);
 
     return {
       visits: visitors.count ?? 0,
       partners: partners.count ?? 0,
       clients: clients.count ?? 0,
       notes: notes.count ?? 0,
+      devis: devis.count ?? 0,
+      factures: factures.count ?? 0,
+      tasks: tasks.count ?? 0,
     };
   } catch {
-    return { visits: 0, partners: 0, clients: 0, notes: 0 };
+    return {
+      visits: 0,
+      partners: 0,
+      clients: 0,
+      notes: 0,
+      devis: 0,
+      factures: 0,
+      tasks: 0,
+    };
   }
 }
 

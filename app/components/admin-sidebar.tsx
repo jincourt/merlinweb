@@ -31,7 +31,7 @@ export function AdminSidebar({ isOpen = false, onNavigate }: AdminSidebarProps) 
     <aside className={`admin-sidebar${isOpen ? " admin-sidebar-open" : ""}`}>
       <div className="admin-sidebar-header">
         <MerlinLogo className="h-8 w-8" red={false} />
-        <span className="admin-sidebar-brand">Merlin Admin</span>
+        <span className="admin-sidebar-brand">Merlin</span>
         {onNavigate && (
           <button
             type="button"

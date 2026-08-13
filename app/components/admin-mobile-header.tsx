@@ -26,7 +26,7 @@ export function AdminMobileHeader({ isOpen, onToggle }: AdminMobileHeaderProps) 
       </button>
       <div className="admin-mobile-header-brand">
         <MerlinLogo className="h-6 w-6" red={false} />
-        <span>Merlin Admin</span>
+        <span>Merlin</span>
       </div>
     </header>
   );
