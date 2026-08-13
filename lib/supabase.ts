@@ -51,6 +51,26 @@ export type QuoteRow = {
   created_at: string;
 };
 
+export type InvoiceRow = {
+  id: string;
+  number: string;
+  type: "devis" | "facture";
+  status: "draft" | "sent" | "paid" | "cancelled";
+  client_name: string;
+  client_email: string | null;
+  client_phone: string | null;
+  client_address: string | null;
+  line_items: unknown;
+  notes: string;
+  subtotal: number;
+  total: number;
+  valid_until: string | null;
+  due_date: string | null;
+  sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -123,6 +143,30 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<QuoteRow>;
+        Relationships: [];
+      };
+      invoice: {
+        Row: InvoiceRow;
+        Insert: {
+          number: string;
+          type: "devis" | "facture";
+          status?: "draft" | "sent" | "paid" | "cancelled";
+          client_name: string;
+          client_email?: string | null;
+          client_phone?: string | null;
+          client_address?: string | null;
+          line_items?: unknown;
+          notes?: string;
+          subtotal?: number;
+          total?: number;
+          valid_until?: string | null;
+          due_date?: string | null;
+          sent_at?: string | null;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<InvoiceRow>;
         Relationships: [];
       };
     };

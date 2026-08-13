@@ -30,6 +30,7 @@ const SLIDES = [
     href: "https://initer.io",
     buttonLabel: "Découvrir Initer.io",
     buttonClass: "btn-green",
+    badgeLabel: "Partenaire",
   },
 ] as const;
 
@@ -118,6 +119,12 @@ export function BuilderCta() {
           <p className="t-body-on-dark mt-6 max-w-2xl">{slide.description}</p>
 
           <div className="relative mt-10 sm:mt-12 w-full">
+            {"badgeLabel" in slide && slide.badgeLabel && (
+              <span className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10 inline-flex items-center rounded-full border border-white/25 bg-black/45 px-4 py-2.5 t-mono-on-dark !text-[0.6875rem] uppercase tracking-[0.06em] text-white/90 backdrop-blur-sm">
+                {slide.badgeLabel}
+              </span>
+            )}
+
             <a
               href={slide.href}
               target="_blank"

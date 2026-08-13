@@ -16,3 +16,7 @@ export async function isAdminAuthenticated(): Promise<boolean> {
 export async function createAdminSessionToken(): Promise<string | null> {
   return createSessionToken();
 }
+
+export async function requireAdminAuth(): Promise<boolean> {
+  return isAdminAuthenticated();
+}

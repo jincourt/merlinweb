@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Gift, LogOut, Eye } from "lucide-react";
+import { LayoutDashboard, Users, Gift, LogOut, Eye, FileText } from "lucide-react";
 import { MerlinLogo } from "./ui";
 
 const NAV = [
   { href: "/admin", label: "Home", icon: LayoutDashboard, exact: true },
   { href: "/admin/visites", label: "Visites", icon: Eye, exact: false },
   { href: "/admin/clients", label: "Clients", icon: Users, exact: false },
+  { href: "/admin/factures", label: "Factures", icon: FileText, exact: false },
   { href: "/admin/partenaires", label: "Partenaires", icon: Gift, exact: false },
 ];
 

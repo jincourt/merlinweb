@@ -1,11 +1,14 @@
 import { formatChf, SITE_OPTIONS } from "@/lib/options";
 import { buildInviteLink } from "@/lib/invite-code";
+import { formatAdminDate } from "@/lib/admin-format";
 import {
   createServiceSupabase,
   type InviteCodeRow,
   type QuoteRow,
   type VisitorRow,
 } from "@/lib/supabase";
+
+export { formatAdminDate };
 
 export type AdminStats = {
   visits: number;
@@ -67,13 +70,6 @@ export async function getAdminQuotes(): Promise<AdminQuote[]> {
   } catch {
     return [];
   }
-}
-
-export function formatAdminDate(iso: string) {
-  return new Intl.DateTimeFormat("fr-CH", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(iso));
 }
 
 export type AdminVisitor = VisitorRow & {
