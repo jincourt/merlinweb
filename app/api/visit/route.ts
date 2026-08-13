@@ -60,36 +60,67 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Erreur." }, { status: 500 });
     }
 
-    if (!existing) {
-      const { error } = await supabase.from("visitor").insert({
-        visitor_key: visitorKey,
-        first_path: path,
-        ...payload,
-        session_count: 1,
-      });
+    const updateVisitor = async (
+      id: string,
+      sessionCount: number,
+    ): Promise<{ ok: true } | { ok: false }> => {
+      const { error } = await supabase
+        .from("visitor")
+        .update({
+          ...payload,
+          session_count: sessionCount + (newSession ? 1 : 0),
+        })
+        .eq("id", id);
 
       if (error) {
-        console.error("Visitor insert error:", error);
-        return NextResponse.json({ error: "Erreur." }, { status: 500 });
+        console.error("Visitor update error:", error);
+        return { ok: false };
       }
 
-      return NextResponse.json({ success: true, created: true });
+      return { ok: true };
+    };
+
+    if (existing) {
+      const result = await updateVisitor(existing.id, existing.session_count);
+      if (!result.ok) {
+        return NextResponse.json({ error: "Erreur." }, { status: 500 });
+      }
+      return NextResponse.json({ success: true, created: false });
     }
 
-    const { error } = await supabase
-      .from("visitor")
-      .update({
-        ...payload,
-        session_count: existing.session_count + (newSession ? 1 : 0),
-      })
-      .eq("id", existing.id);
+    const { error: insertError } = await supabase.from("visitor").insert({
+      visitor_key: visitorKey,
+      first_path: path,
+      ...payload,
+      session_count: 1,
+    });
 
-    if (error) {
-      console.error("Visitor update error:", error);
+    if (insertError) {
+      // Concurrent requests can both pass the lookup and race on insert.
+      if (insertError.code === "23505") {
+        const { data: raced, error: raceFetchError } = await supabase
+          .from("visitor")
+          .select("id, session_count")
+          .eq("visitor_key", visitorKey)
+          .maybeSingle();
+
+        if (raceFetchError || !raced) {
+          console.error("Visitor race lookup error:", raceFetchError);
+          return NextResponse.json({ error: "Erreur." }, { status: 500 });
+        }
+
+        const result = await updateVisitor(raced.id, raced.session_count);
+        if (!result.ok) {
+          return NextResponse.json({ error: "Erreur." }, { status: 500 });
+        }
+        return NextResponse.json({ success: true, created: false });
+      }
+
+      console.error("Visitor insert error:", insertError);
       return NextResponse.json({ error: "Erreur." }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, created: false });
+    return NextResponse.json({ success: true, created: true });
   } catch {
     return NextResponse.json({ error: "Erreur." }, { status: 500 });
   }
