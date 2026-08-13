@@ -125,6 +125,15 @@ export const SITE_OPTIONS: SiteOption[] = [
     footnote: "Inclus par défaut",
   },
   {
+    id: "rdv",
+    label: "Prise de rendez-vous",
+    description: "Agenda en ligne synchronisé avec votre planning.",
+    detail:
+      "Vos clients réservent un créneau en ligne selon vos disponibilités. Confirmations automatiques et rappels pour limiter les absences.",
+    price: 890,
+    category: "site",
+  },
+  {
     id: "devis",
     label: "Devis automatisé",
     description: "Formulaire intelligent avec calcul et envoi PDF.",
@@ -132,6 +141,16 @@ export const SITE_OPTIONS: SiteOption[] = [
       "Vos visiteurs configurent une demande, le total se calcule automatiquement et un PDF récapitulatif est généré. Idéal pour les artisans, consultants et prestataires de services.",
     price: 990,
     category: "site",
+  },
+  {
+    id: "personnalise",
+    label: "Personnalisé",
+    description: "Design et contenu adaptés à votre activité.",
+    detail:
+      "Un besoin spécifique qui ne figure pas dans notre catalogue ? Décrivez-le dans votre devis et nous construisons une solution sur mesure.",
+    price: 0,
+    category: "site",
+    hidePrice: true,
   },
   {
     id: "facturation",
@@ -167,15 +186,6 @@ export const SITE_OPTIONS: SiteOption[] = [
     detail:
       "Collectez des abonnés, envoyez des newsletters soignées et gardez le contact avec votre audience grâce à des templates alignés avec votre identité visuelle.",
     price: 790,
-    category: "site",
-  },
-  {
-    id: "rdv",
-    label: "Prise de rendez-vous",
-    description: "Agenda en ligne synchronisé avec votre planning.",
-    detail:
-      "Vos clients réservent un créneau en ligne selon vos disponibilités. Confirmations automatiques et rappels pour limiter les absences.",
-    price: 890,
     category: "site",
   },
   {
@@ -240,16 +250,6 @@ export const SITE_OPTIONS: SiteOption[] = [
       "Une session dédiée pour maîtriser votre site, modifier vos contenus et tirer le meilleur parti de chaque module activé.",
     price: 590,
     category: "site",
-  },
-  {
-    id: "personnalise",
-    label: "Personnalisé",
-    description: "Design et contenu adaptés à votre activité.",
-    detail:
-      "Un besoin spécifique qui ne figure pas dans notre catalogue ? Décrivez-le dans votre devis et nous construisons une solution sur mesure.",
-    price: 0,
-    category: "site",
-    hidePrice: true,
   },
 
   // ── Marketing ──

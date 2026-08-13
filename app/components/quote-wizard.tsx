@@ -4,20 +4,19 @@ import {
   DEFAULT_SELECTED_OPTION_IDS,
   OPTION_CATEGORIES,
   SITE_OPTIONS,
-  computeTotal,
   filterOptionsByCategory,
-  formatChf,
-  formatOptionPrice,
+  type SiteOption,
 } from "@/lib/options";
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { Search, X } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
 
-const STEPS = ["Options", "Contact", "Envoi"] as const;
+const STEPS = ["Options", "Contact"] as const;
 const CONTACT_STEP = 1;
-const ENVOI_STEP = 2;
+const CUSTOM_OPTION_ID = "personnalise";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s()./-]{8,20}$/;
@@ -73,61 +72,169 @@ function OptionCategoryTabs({ activeIndex }: { activeIndex: number }) {
   );
 }
 
+function normalizeSearch(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function filterOptionsBySearch(options: SiteOption[], query: string) {
+  const normalized = normalizeSearch(query);
+  if (!normalized) return options;
+
+  return options.filter((option) => {
+    const haystack = [option.label, option.description, option.detail ?? ""]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(normalized);
+  });
+}
+
+function getCategoryLabel(categoryId: SiteOption["category"]) {
+  return OPTION_CATEGORIES.find((c) => c.id === categoryId)?.label ?? categoryId;
+}
+
 function OptionsPanel({
   categoryIndex,
   selected,
-  total,
+  customRequest,
   onToggle,
+  onCustomRequestChange,
 }: {
   categoryIndex: number;
   selected: string[];
-  total: number;
+  customRequest: string;
   onToggle: (id: string) => void;
+  onCustomRequestChange: (value: string) => void;
 }) {
+  const customInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const category = OPTION_CATEGORIES[categoryIndex];
   const categoryOptions = useMemo(
     () => filterOptionsByCategory(category.id),
     [category.id],
   );
+  const isSearching = normalizeSearch(searchQuery).length > 0;
+  const displayedOptions = useMemo(() => {
+    if (isSearching) {
+      return filterOptionsBySearch(SITE_OPTIONS, searchQuery);
+    }
+    return categoryOptions;
+  }, [isSearching, searchQuery, categoryOptions]);
+
+  function handleToggle(id: string) {
+    onToggle(id);
+    if (id === CUSTOM_OPTION_ID && !selected.includes(id)) {
+      requestAnimationFrame(() => customInputRef.current?.focus());
+    }
+  }
+
+  function openSearch() {
+    setSearchOpen(true);
+    requestAnimationFrame(() => searchInputRef.current?.focus());
+  }
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
 
   return (
     <motion.div key={category.id} {...stepTransition}>
-      <div className="flex items-end justify-between mb-6">
+      <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <p className="t-mono">Modules optionnels</p>
           <p className="t-body mt-1 text-sm">
             Base incluse · <PromoBasePrice />
           </p>
         </div>
-        <p className="t-mono !text-black">
-          Total ·{" "}
-          <span className="text-red">
-            {formatChf(total, { approximate: true })}
-          </span>
-        </p>
+        <button
+          type="button"
+          className={`wizard-search-toggle${searchOpen ? " wizard-search-toggle-active" : ""}`}
+          onClick={() => (searchOpen ? closeSearch() : openSearch())}
+          aria-label={searchOpen ? "Fermer la recherche" : "Rechercher une option"}
+          aria-expanded={searchOpen}
+        >
+          {searchOpen ? (
+            <X size={16} strokeWidth={1.75} aria-hidden />
+          ) : (
+            <Search size={16} strokeWidth={1.75} aria-hidden />
+          )}
+        </button>
       </div>
 
-      <OptionCategoryTabs activeIndex={categoryIndex} />
+      <AnimatePresence initial={false}>
+        {searchOpen && (
+          <motion.div
+            key="search"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="wizard-search-bar mb-4">
+              <Search
+                size={15}
+                strokeWidth={1.75}
+                className="wizard-search-bar-icon"
+                aria-hidden
+              />
+              <input
+                ref={searchInputRef}
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher une option…"
+                className="wizard-search-input"
+                aria-label="Rechercher dans les options"
+              />
+              {isSearching && (
+                <span className="wizard-search-count">
+                  {displayedOptions.length} résultat
+                  {displayedOptions.length !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!isSearching && <OptionCategoryTabs activeIndex={categoryIndex} />}
 
       <MotionStagger
         immediate
         className="grid gap-2 max-h-[420px] overflow-y-auto pr-1"
         stagger={0.04}
       >
-        {categoryOptions.map((option) => {
+        {displayedOptions.length === 0 ? (
+          <p className="t-body py-8 text-center text-sm">
+            Aucune option ne correspond à votre recherche.
+          </p>
+        ) : (
+          displayedOptions.map((option) => {
           const isSelected = selected.includes(option.id);
           const isLocked = option.locked === true;
+          const isCustom = option.id === CUSTOM_OPTION_ID;
+
           return (
             <MotionItem key={option.id} soft>
-              <button
-                type="button"
-                onClick={() => onToggle(option.id)}
-                aria-pressed={isSelected}
-                aria-disabled={isLocked}
+              <div
                 className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="text-left">
+                <button
+                  type="button"
+                  onClick={() => handleToggle(option.id)}
+                  aria-pressed={isSelected}
+                  aria-disabled={isLocked}
+                  className="w-full text-left"
+                >
+                  <div>
+                    {isSearching && (
+                      <p className="t-mono mb-1 !text-[0.5625rem] !text-muted">
+                        {getCategoryLabel(option.category)}
+                      </p>
+                    )}
                     <p className="text-[0.9375rem] font-medium text-black">
                       <OptionLabel
                         label={option.label}
@@ -143,19 +250,49 @@ function OptionsPanel({
                       </p>
                     ) : null}
                   </div>
-                  {!option.hidePrice && (
-                    <span className="t-mono shrink-0 !text-black">
-                      {formatOptionPrice(option)}
-                    </span>
-                  )}
-                </div>
-              </button>
+                </button>
+
+                {isCustom && isSelected && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <label
+                      htmlFor="custom-request"
+                      className="t-mono !text-[0.625rem]"
+                    >
+                      Décrivez votre besoin
+                    </label>
+                    <input
+                      ref={customInputRef}
+                      id="custom-request"
+                      type="text"
+                      value={customRequest}
+                      onChange={(e) => onCustomRequestChange(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder="Ex. intégration CRM, espace membres…"
+                      className="wizard-input mt-2"
+                    />
+                  </div>
+                )}
+              </div>
             </MotionItem>
           );
-        })}
+        })
+        )}
       </MotionStagger>
     </motion.div>
   );
+}
+
+function buildSubmissionMessage(message: string, customRequest: string) {
+  const parts: string[] = [];
+
+  if (customRequest.trim()) {
+    parts.push(`Besoin personnalisé : ${customRequest.trim()}`);
+  }
+  if (message.trim()) {
+    parts.push(message.trim());
+  }
+
+  return parts.join("\n\n");
 }
 
 export function QuoteWizard() {
@@ -165,12 +302,11 @@ export function QuoteWizard() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [selected, setSelected] = useState<string[]>(DEFAULT_SELECTED_OPTION_IDS);
+  const [customRequest, setCustomRequest] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const total = useMemo(() => computeTotal(selected), [selected]);
-  const selectedOptions = SITE_OPTIONS.filter((o) => selected.includes(o.id));
   const isLastOptionPhase =
     optionPhase >= OPTION_CATEGORIES.length - 1;
 
@@ -178,9 +314,37 @@ export function QuoteWizard() {
     const option = SITE_OPTIONS.find((o) => o.id === id);
     if (option?.locked) return;
 
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => {
+      if (prev.includes(id)) {
+        if (id === CUSTOM_OPTION_ID) setCustomRequest("");
+        return prev.filter((x) => x !== id);
+      }
+      return [...prev, id];
+    });
+  }
+
+  function validateContact() {
+    const hasEmail = email.trim().length > 0;
+    const hasPhone = phone.trim().length > 0;
+
+    if (!hasEmail && !hasPhone) {
+      setErrorMsg("Indiquez un email ou un téléphone.");
+      return false;
+    }
+    if (hasEmail && !isValidEmail(email)) {
+      setErrorMsg("Adresse email invalide.");
+      return false;
+    }
+    if (hasPhone && !isValidPhone(phone)) {
+      setErrorMsg("Numéro de téléphone invalide.");
+      return false;
+    }
+    if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
+      setErrorMsg("Décrivez votre besoin personnalisé.");
+      return false;
+    }
+
+    return true;
   }
 
   function next() {
@@ -190,26 +354,13 @@ export function QuoteWizard() {
       return;
     }
 
-    if (step === CONTACT_STEP) {
-      const hasEmail = email.trim().length > 0;
-      const hasPhone = phone.trim().length > 0;
-
-      if (!hasEmail && !hasPhone) {
-        setErrorMsg("Indiquez un email ou un téléphone.");
-        return;
-      }
-      if (hasEmail && !isValidEmail(email)) {
-        setErrorMsg("Adresse email invalide.");
-        return;
-      }
-      if (hasPhone && !isValidPhone(phone)) {
-        setErrorMsg("Numéro de téléphone invalide.");
-        return;
-      }
+    if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
+      setErrorMsg("Décrivez votre besoin personnalisé.");
+      return;
     }
 
     setErrorMsg("");
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    setStep(CONTACT_STEP);
   }
 
   function back() {
@@ -230,6 +381,8 @@ export function QuoteWizard() {
   }
 
   async function submit() {
+    if (!validateContact()) return;
+
     setStatus("loading");
     setErrorMsg("");
 
@@ -241,7 +394,7 @@ export function QuoteWizard() {
           email: email.trim(),
           phone: phone.trim(),
           selectedIds: selected,
-          message,
+          message: buildSubmissionMessage(message, customRequest),
           inviteCode: inviteCode ?? undefined,
         }),
       });
@@ -280,9 +433,6 @@ export function QuoteWizard() {
           ) : null}
           .
         </p>
-        <p className="t-mono mt-6">
-          Total estimé · {formatChf(total, { approximate: true })}
-        </p>
       </MotionDiv>
     );
   }
@@ -320,8 +470,9 @@ export function QuoteWizard() {
           <OptionsPanel
             categoryIndex={optionPhase}
             selected={selected}
-            total={total}
+            customRequest={customRequest}
             onToggle={toggleOption}
+            onCustomRequestChange={setCustomRequest}
           />
         )}
 
@@ -355,89 +506,19 @@ export function QuoteWizard() {
                 autoComplete="tel"
               />
             </div>
-            <p className="t-body text-sm">
-              Remplissez au moins un des deux champs pour que l&apos;on vous
-              recontacte.
-            </p>
-          </motion.div>
-        )}
-
-        {step === ENVOI_STEP && (
-          <motion.div key="recap" {...stepTransition}>
-            <p className="t-mono">Récapitulatif</p>
-
-            <div className="mt-6 space-y-0">
-              <div className="spec-row">
-                <span className="t-mono">Site de base</span>
-                <span className="text-[0.9375rem] font-medium text-black">
-                  <PromoBasePrice />
-                </span>
-              </div>
-              {selectedOptions.length > 0 ? (
-                selectedOptions.map((o) => (
-                  <div key={o.id} className="spec-row">
-                    <span className="t-mono">
-                      <OptionLabel label={o.label} footnote={o.footnote} />
-                      {o.footnote ? (
-                        <span className="mt-0.5 block !normal-case !tracking-normal text-[0.6875rem] text-muted">
-                          * {o.footnote}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="text-[0.9375rem] font-medium text-black">
-                      {o.hidePrice ? "—" : formatOptionPrice(o)}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div className="spec-row">
-                  <span className="t-mono">Options</span>
-                  <span className="text-[0.9375rem] text-muted">Aucune</span>
-                </div>
-              )}
-              {email.trim() && (
-                <div className="spec-row">
-                  <span className="t-mono">Email</span>
-                  <span className="text-[0.9375rem] font-medium text-black">
-                    {email.trim()}
-                  </span>
-                </div>
-              )}
-              {phone.trim() && (
-                <div className="spec-row">
-                  <span className="t-mono">Téléphone</span>
-                  <span className="text-[0.9375rem] font-medium text-black">
-                    {phone.trim()}
-                  </span>
-                </div>
-              )}
-              {inviteCode && (
-                <div className="spec-row">
-                  <span className="t-mono">Code invitation</span>
-                  <span className="text-[0.9375rem] font-medium font-mono tracking-wider text-red">
-                    {inviteCode}
-                  </span>
-                </div>
-              )}
-              <div className="spec-row border-b-0">
-                <span className="t-mono">Total estimé</span>
-                <span className="text-[0.9375rem] font-medium text-red">
-                  {formatChf(total, { approximate: true })}
-                </span>
-              </div>
+            <div>
+              <label htmlFor="message" className="t-mono">
+                Message (optionnel)
+              </label>
+              <textarea
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Décrivez brièvement votre projet…"
+                rows={3}
+                className="wizard-input mt-3 resize-none"
+              />
             </div>
-
-            <label htmlFor="message" className="t-mono mt-8 block">
-              Message (optionnel)
-            </label>
-            <textarea
-              id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Décrivez brièvement votre projet…"
-              rows={3}
-              className="wizard-input mt-3 resize-none"
-            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -464,7 +545,7 @@ export function QuoteWizard() {
           <span />
         )}
 
-        {step < STEPS.length - 1 ? (
+        {step === 0 ? (
           <button type="button" onClick={next} className="btn-primary">
             Continuer
           </button>

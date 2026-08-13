@@ -422,6 +422,74 @@ body {
   color: var(--muted);
 }
 
+.wizard-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--white);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wizard-search-toggle:hover,
+.wizard-search-toggle-active {
+  border-color: rgba(17, 17, 17, 0.2);
+  color: var(--black);
+  background: var(--gray-bg);
+}
+
+.wizard-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  position: relative;
+}
+
+.wizard-search-bar-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.wizard-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem 0.75rem 2.375rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--white);
+  font-size: 0.875rem;
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.wizard-search-input:focus {
+  border-color: rgba(17, 17, 17, 0.25);
+}
+
+.wizard-search-input::placeholder {
+  color: var(--muted);
+}
+
+.wizard-search-count {
+  flex-shrink: 0;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .option-card {
   width: 100%;
   text-align: left;
