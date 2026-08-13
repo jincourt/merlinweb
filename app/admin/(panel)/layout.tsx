@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminSidebar } from "@/app/components/admin-sidebar";
+import { AdminShell } from "@/app/components/admin-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +13,5 @@ export default function AdminPanelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="admin-shell">
-      <AdminSidebar />
-      <div className="admin-main">{children}</div>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

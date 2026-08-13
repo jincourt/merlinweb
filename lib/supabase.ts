@@ -51,6 +51,17 @@ export type QuoteRow = {
   created_at: string;
 };
 
+export type TaskRow = {
+  id: string;
+  title: string;
+  description: string;
+  due_date: string | null;
+  status: "todo" | "in_progress" | "done";
+  position: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type InvoiceRow = {
   id: string;
   number: string;
@@ -143,6 +154,21 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<QuoteRow>;
+        Relationships: [];
+      };
+      task: {
+        Row: TaskRow;
+        Insert: {
+          title: string;
+          description?: string;
+          due_date?: string | null;
+          status?: "todo" | "in_progress" | "done";
+          position?: number;
+          id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<TaskRow>;
         Relationships: [];
       };
       invoice: {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Gift, LogOut, Eye, FileText } from "lucide-react";
+import { LayoutDashboard, Users, Gift, LogOut, Eye, FileText, CheckSquare, X } from "lucide-react";
 import { MerlinLogo } from "./ui";
 
 const NAV = [
@@ -10,10 +10,16 @@ const NAV = [
   { href: "/admin/visites", label: "Visites", icon: Eye, exact: false },
   { href: "/admin/clients", label: "Clients", icon: Users, exact: false },
   { href: "/admin/factures", label: "Factures", icon: FileText, exact: false },
+  { href: "/admin/taches", label: "Tâches", icon: CheckSquare, exact: false },
   { href: "/admin/partenaires", label: "Partenaires", icon: Gift, exact: false },
 ];
 
-export function AdminSidebar() {
+type AdminSidebarProps = {
+  isOpen?: boolean;
+  onNavigate?: () => void;
+};
+
+export function AdminSidebar({ isOpen = false, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
 
   async function handleLogout() {
@@ -22,10 +28,20 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar${isOpen ? " admin-sidebar-open" : ""}`}>
       <div className="admin-sidebar-header">
         <MerlinLogo className="h-8 w-8" red={false} />
         <span className="admin-sidebar-brand">Merlin Admin</span>
+        {onNavigate && (
+          <button
+            type="button"
+            className="admin-sidebar-close"
+            onClick={onNavigate}
+            aria-label="Fermer le menu"
+          >
+            <X size={18} strokeWidth={1.75} aria-hidden />
+          </button>
+        )}
       </div>
 
       <nav className="admin-sidebar-nav">
@@ -35,6 +51,7 @@ export function AdminSidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={`admin-sidebar-link${active ? " admin-sidebar-link-active" : ""}`}
             >
               <Icon size={16} strokeWidth={1.75} aria-hidden />
@@ -45,7 +62,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="admin-sidebar-footer">
-        <Link href="/" className="admin-sidebar-link">
+        <Link href="/" className="admin-sidebar-link" onClick={onNavigate}>
           Voir le site
         </Link>
         <button
