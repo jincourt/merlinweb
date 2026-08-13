@@ -1,6 +1,11 @@
 import { formatChf, SITE_OPTIONS } from "@/lib/options";
 import { buildInviteLink } from "@/lib/invite-code";
-import { createServiceSupabase, type InviteCodeRow, type QuoteRow } from "@/lib/supabase";
+import {
+  createServiceSupabase,
+  type InviteCodeRow,
+  type QuoteRow,
+  type VisitorRow,
+} from "@/lib/supabase";
 
 export type AdminStats = {
   visits: number;
@@ -13,15 +18,15 @@ export async function getAdminStats(): Promise<AdminStats> {
   try {
     const supabase = createServiceSupabase();
 
-    const [visits, partners, clients, notes] = await Promise.all([
-      supabase.from("visit").select("id", { count: "exact", head: true }),
+    const [visitors, partners, clients, notes] = await Promise.all([
+      supabase.from("visitor").select("id", { count: "exact", head: true }),
       supabase.from("code").select("id", { count: "exact", head: true }),
       supabase.from("quote").select("id", { count: "exact", head: true }),
       supabase.from("note").select("id", { count: "exact", head: true }),
     ]);
 
     return {
-      visits: visits.count ?? 0,
+      visits: visitors.count ?? 0,
       partners: partners.count ?? 0,
       clients: clients.count ?? 0,
       notes: notes.count ?? 0,
@@ -69,6 +74,47 @@ export function formatAdminDate(iso: string) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
+}
+
+export type AdminVisitor = VisitorRow & {
+  browserLabel: string;
+  utmLabel: string | null;
+};
+
+function summarizeUserAgent(ua: string | null): string {
+  if (!ua) return "—";
+  if (/Edg\//i.test(ua)) return "Edge";
+  if (/Chrome\//i.test(ua) && !/Chromium/i.test(ua)) return "Chrome";
+  if (/Safari\//i.test(ua) && !/Chrome/i.test(ua)) return "Safari";
+  if (/Firefox\//i.test(ua)) return "Firefox";
+  return ua.slice(0, 48);
+}
+
+function formatUtm(row: VisitorRow): string | null {
+  const parts = [row.utm_source, row.utm_medium, row.utm_campaign].filter(
+    Boolean,
+  );
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+export async function getAdminVisitors(): Promise<AdminVisitor[]> {
+  try {
+    const supabase = createServiceSupabase();
+    const { data, error } = await supabase
+      .from("visitor")
+      .select("*")
+      .order("last_seen_at", { ascending: false });
+
+    if (error) return [];
+
+    return (data ?? []).map((row) => ({
+      ...row,
+      browserLabel: summarizeUserAgent(row.user_agent),
+      utmLabel: formatUtm(row),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export type AdminPartner = InviteCodeRow & {

@@ -10,7 +10,7 @@ export default async function AdminHomePage() {
     {
       label: "Visites",
       value: stats.visits,
-      hint: "Sessions uniques sur la page d'accueil",
+      hint: "Visiteurs uniques identifiés sur le site",
       icon: Eye,
     },
     {

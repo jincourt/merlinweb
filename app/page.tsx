@@ -7,7 +7,6 @@ import { SiteFooter } from "./components/site-footer";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
 import { PromoBasePrice } from "./components/promo-base-price";
-import { VisitTracker } from "./components/visit-tracker";
 import { CATEGORY_META, PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
 import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
@@ -85,7 +84,6 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
 export default function Home() {
   return (
     <>
-      <VisitTracker />
       <main>
         {/* ── OFFRE — rouge / blanc ── */}
         <section id="offre" className="relative overflow-hidden bg-red text-white">

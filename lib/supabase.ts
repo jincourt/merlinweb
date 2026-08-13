@@ -21,6 +21,25 @@ export type VisitRow = {
   created_at: string;
 };
 
+export type VisitorRow = {
+  id: string;
+  visitor_key: string;
+  first_path: string;
+  last_path: string;
+  referrer: string | null;
+  user_agent: string | null;
+  language: string | null;
+  screen: string | null;
+  timezone: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  invite_code: string | null;
+  session_count: number;
+  first_seen_at: string;
+  last_seen_at: string;
+};
+
 export type QuoteRow = {
   id: string;
   email: string;
@@ -66,6 +85,29 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<VisitRow>;
+        Relationships: [];
+      };
+      visitor: {
+        Row: VisitorRow;
+        Insert: {
+          visitor_key: string;
+          first_path?: string;
+          last_path?: string;
+          referrer?: string | null;
+          user_agent?: string | null;
+          language?: string | null;
+          screen?: string | null;
+          timezone?: string | null;
+          utm_source?: string | null;
+          utm_medium?: string | null;
+          utm_campaign?: string | null;
+          invite_code?: string | null;
+          session_count?: number;
+          first_seen_at?: string;
+          last_seen_at?: string;
+          id?: string;
+        };
+        Update: Partial<VisitorRow>;
         Relationships: [];
       };
       quote: {
