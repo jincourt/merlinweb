@@ -610,7 +610,7 @@ export function QuoteWizard() {
             disabled={status === "loading"}
             className="btn-primary disabled:opacity-50"
           >
-            {status === "loading" ? "Envoi…" : "Envoyer la demande"}
+            {status === "loading" ? "Envoi…" : "Réserver ma place"}
           </button>
         ) : (
           <button type="button" onClick={next} className="btn-primary">

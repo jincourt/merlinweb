@@ -34,7 +34,7 @@ export function SiteFooter() {
             </p>
             <LeaveNoteLink />
             <p className="mt-4 text-sm text-white/45 leading-relaxed">
-              Studio web suisse.
+              Studio web suisse · Lausanne, VD.
               <br />
               Sites personnalisés pour indépendants et PME.
             </p>

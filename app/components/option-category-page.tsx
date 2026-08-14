@@ -53,7 +53,7 @@ export function OptionCategoryPage({ category }: Props) {
               </h1>
               <p className="t-body-on-dark mt-6 max-w-2xl">{meta.intro}</p>
               <Link href="/#devis" className="btn-white mt-8">
-                Configurer mon devis
+                Réserver ma place
               </Link>
             </MotionDiv>
           </div>

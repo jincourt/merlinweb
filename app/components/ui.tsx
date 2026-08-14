@@ -1,16 +1,18 @@
 function MerlinLogo({
   className = "h-8 w-8",
   red = true,
+  blend = true,
 }: {
   className?: string;
   red?: boolean;
+  blend?: boolean;
 }) {
   if (!red) {
     return (
       <img
         src="/logo/merline.gif"
         alt="Merlin"
-        className={`shrink-0 mix-blend-lighten ${className}`}
+        className={`shrink-0 ${blend ? "mix-blend-lighten" : ""} ${className}`}
       />
     );
   }

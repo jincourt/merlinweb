@@ -7,16 +7,17 @@ import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 const WHY_MERLIN_POINTS = [
   {
     n: "01",
-    value: "CHF 10k+",
-    label: "Agences classiques",
-    insight: "Devis à cinq chiffres pour un site vitrine standard.",
+    value: "3'500–7'000 CHF",
+    label: "Agences suisses",
+    insight:
+      "Fourchette habituelle pour un site vitrine one-page en Suisse romande — avant options et maintenance.",
   },
   {
     n: "02",
     value: "0 CHF",
     label: "Offre de lancement",
     insight:
-      "Un site sur mesure accessible, sans payer le prix d'une grande agence.",
+      "Site sur mesure offert aux premiers clients. Seul l'hébergement (200.- CHF/an) reste à charge.",
   },
   {
     n: "03",
@@ -45,7 +46,7 @@ function ReserveCta({ className = "" }: { className?: string }) {
 
 export function MarketingWhyMerline() {
   return (
-    <section id="pourquoi" className="why-merlin-section">
+    <section id="pourquoi" className="why-merlin-section scroll-mt-16">
       <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
         <div className="grid gap-14 lg:grid-cols-2 lg:gap-20 lg:items-start">
           <MotionDiv>
@@ -60,7 +61,7 @@ export function MarketingWhyMerline() {
                 className="text-red"
                 aria-hidden="true"
               />
-              4.8/5
+              4.8/5 · avis clients
             </p>
             <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-black max-w-xl">
               Trop cher,
@@ -75,6 +76,7 @@ export function MarketingWhyMerline() {
               allie sur mesure et accessibilité — avec un accompagnement humain
               de A à Z.
             </p>
+
             <ReserveCta className="mt-8 hidden lg:flex" />
           </MotionDiv>
 

@@ -3,29 +3,25 @@ import { DevisWizard } from "./components/devis-wizard";
 import { MerlinLogo } from "./components/ui";
 import { InviteSection } from "./components/invite-section";
 import { SiteFooter } from "./components/site-footer";
+import { SiteHeader } from "./components/site-header";
 import { MarketingKeypoints } from "./components/marketing-keypoints";
 import { MarketingCompetition } from "./components/marketing-competition";
 import { MarketingWhyMerline } from "./components/marketing-why-merline";
+import { MarketingModules } from "./components/marketing-modules";
 import { ProductShowcase } from "./components/product-showcase";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
 import { PromoBasePrice } from "./components/promo-base-price";
-import { CATEGORY_META, PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
+import { PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-
-const MODULES = [
-  { n: "01", ...CATEGORY_META.site },
-  { n: "02", ...CATEGORY_META.marketing },
-  { n: "03", ...CATEGORY_META.identite },
-];
 
 const SPECS = [
   { key: "Prestation", val: "Site one-page personnalisé" },
-  { key: "Réalisation", val: "Équipe professionnelle" },
+  { key: "Équipe", val: "3 personnes · Lausanne, VD" },
   { key: "Délai", val: "7 jours ouvrables" },
   { key: "Suivi", val: "Inclus" },
   { key: "Tarif", promo: true, highlight: true },
+  { key: "Hébergement", val: "200.- CHF/an · domaine & SSL" },
   { key: "Disponibilité", val: "Offre limitée" },
 ];
 
@@ -87,8 +83,9 @@ function OfferPriceCard({ animate = false }: { animate?: boolean }) {
 export default function Home() {
   return (
     <>
+      <SiteHeader />
       <main>
-        {/* ── OFFRE — rouge / blanc ── */}
+        {/* ── HERO — rouge / blanc ── */}
         <section id="offre" className="relative overflow-hidden bg-red text-white">
           <HeroGeometry />
           <div className="relative z-10 mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
@@ -96,16 +93,26 @@ export default function Home() {
               <MotionDiv immediate>
                 <MerlinLogo className="h-14 w-14 sm:h-16 sm:w-16" red={false} />
                 <span className="t-mono-on-dark mt-6 block !text-white/90">
-                  Offre promotionnelle
+                  Studio web · Lausanne, VD
                 </span>
-                <h2 className="t-display mt-4 text-[clamp(2rem,5vw,3.5rem)] text-white">
-                  Un site personnalisé,
+                <h1 className="t-display mt-4 text-[clamp(2rem,5vw,3.5rem)] text-white">
+                  Vos clients vous cherchent sur Google.
                   <br />
-                  livré en 7 jours
-                </h2>
+                  <span className="text-white/75">
+                    Aujourd&apos;hui, ils trouvent votre concurrent.
+                  </span>
+                </h1>
+                <p className="t-display mt-6 text-[clamp(1.375rem,3.5vw,2rem)] text-white leading-snug">
+                  Dans 7 jours, c&apos;est vous qu&apos;ils appellent
+                  <span className="text-white/40">.</span>
+                </p>
                 <p className="t-body-on-dark mt-6 max-w-md">
-                  Offre limitée à 0 CHF. Pas de template — chaque site est
-                  conçu sur mesure par notre équipe.
+                  Site sur mesure offert à{" "}
+                  <span className="font-medium text-white">0 CHF</span> pour les
+                  premiers clients — pas de template. Seul l&apos;hébergement
+                  reste à charge :{" "}
+                  <span className="font-medium text-white">200.- CHF/an</span>{" "}
+                  (nom de domaine, SSL, serveur).
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <a href="#devis" className="btn-white">
@@ -113,7 +120,8 @@ export default function Home() {
                     <ArrowRight size={14} strokeWidth={2} aria-hidden />
                   </a>
                   <span className="t-mono-on-dark !text-white/50">
-                    {PROMO_SPOTS_LEFT} place{PROMO_SPOTS_LEFT > 1 ? "s" : ""} restante{PROMO_SPOTS_LEFT > 1 ? "s" : ""}
+                    {PROMO_SPOTS_LEFT} place{PROMO_SPOTS_LEFT > 1 ? "s" : ""}{" "}
+                    restante{PROMO_SPOTS_LEFT > 1 ? "s" : ""}
                   </span>
                 </div>
               </MotionDiv>
@@ -130,15 +138,21 @@ export default function Home() {
 
         <MarketingKeypoints />
 
+        <MarketingCompetition />
+
         <ProductShowcase />
 
+        <MarketingWhyMerline />
+
+        <MarketingModules />
+
         {/* ── DEVIS — blanc / noir ── */}
-        <section id="devis" className="bg-white text-black scroll-mt-8">
+        <section id="devis" className="bg-white text-black scroll-mt-16">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-24 items-start">
               <MotionDiv>
                 <span className="t-mono block !text-[1rem] !text-black/70">
-                  Configurez votre site
+                  Dernière étape
                 </span>
                 <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2.5rem,6vw,4.5rem)] text-black">
                   Réservez
@@ -147,8 +161,9 @@ export default function Home() {
                   <span className="text-black/40">.</span>
                 </h2>
                 <p className="t-body mt-6 max-w-sm">
-                  Commencez par vos coordonnées — nous revenons sous 24h.
-                  Configurez ensuite les modules dont vous avez besoin.
+                  Laissez vos coordonnées — nous revenons sous 24h pour valider
+                  votre projet. Configurez ensuite les modules dont vous avez
+                  besoin.
                 </p>
                 <div className="mt-6 max-w-xs">
                   <div className="flex items-center justify-between gap-4">
@@ -181,54 +196,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <MarketingCompetition />
-
-        {/* ── PROCESSUS — gris foncé / blanc ── */}
-        <section id="processus" className="bg-gray-dark text-white">
-          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-20 sm:pb-28">
-            <MotionDiv>
-              <span className="t-mono-on-dark block !text-[1rem] !text-white/70">
-                Modules
-              </span>
-              <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-white">
-                Trois catégories,
-                <br />
-                à la carte
-              </h2>
-            </MotionDiv>
-
-            <MotionStagger
-              className="rule-on-dark mt-14 grid sm:grid-cols-2 lg:grid-cols-3"
-              delay={0.08}
-              stagger={0.1}
-            >
-              {MODULES.map((step) => (
-                <MotionItem key={step.n}>
-                  <div className="border-b border-[var(--border-on-dark)] py-8 sm:py-10 last:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0 lg:px-8 lg:first:pl-0 flex flex-col h-full">
-                    <span className="t-mono-on-dark !text-[2rem] !tracking-tight !text-white/10">
-                      {step.n}
-                    </span>
-                    <h3 className="mt-4 text-[0.9375rem] font-medium text-white">
-                      {step.label}
-                    </h3>
-                    <p className="mt-2 text-sm text-white/45 leading-relaxed flex-1">
-                      {step.summary}
-                    </p>
-                    <Link
-                      href={`/options/${step.slug}`}
-                      className="btn-outline-white mt-6 w-fit !text-[0.625rem]"
-                    >
-                      Voir les options
-                    </Link>
-                  </div>
-                </MotionItem>
-              ))}
-            </MotionStagger>
-          </div>
-        </section>
-
-        <MarketingWhyMerline />
       </main>
 
       <InviteSection />

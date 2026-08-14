@@ -402,3 +402,29 @@ export function getOptionsForCategory(category: OptionCategory): SiteOption[] {
 export function getCategoryBySlug(slug: string): CategoryMeta | undefined {
   return Object.values(CATEGORY_META).find((c) => c.slug === slug);
 }
+
+/** Fourchette de prix catalogue (modules ponctuels, hors abonnements) */
+export function getCategoryPriceRange(
+  category: OptionCategory,
+): { min: number; max: number } | null {
+  const prices = SITE_OPTIONS.filter(
+    (o) =>
+      o.category === category &&
+      o.price > 0 &&
+      !o.hidePrice &&
+      !o.priceSuffix,
+  ).map((o) => o.price);
+
+  if (prices.length === 0) return null;
+
+  return { min: Math.min(...prices), max: Math.max(...prices) };
+}
+
+export function formatCategoryPriceRange(category: OptionCategory): string {
+  const range = getCategoryPriceRange(category);
+  if (!range) return "";
+  if (range.min === range.max) {
+    return `dès ${formatChf(range.min, { approximate: true })}`;
+  }
+  return `dès ${formatChf(range.min, { approximate: true })} · jusqu'à ${formatChf(range.max, { approximate: true })}`;
+}

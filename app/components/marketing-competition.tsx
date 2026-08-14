@@ -11,15 +11,18 @@ const COMPETITION_KEYPOINTS: MarketingKeypoint[] = [
   {
     value: 76,
     suffix: "%",
-    label: "Comparent en ligne",
+    label: "Visitent le site d'un concurrent",
     insight:
-      "Avant de vous contacter, vos prospects visitent le site de vos concurrents.",
+      "Avant de vous contacter, ils comparent plusieurs prestataires en ligne.",
+    source: "BrightLocal · Local Consumer Review Survey, 2024",
   },
   {
-    displayText: "1er",
-    label: "Sur Google",
+    displayText: "3",
+    suffix: " sur 4",
+    label: "Clics sur le top 3 Google",
     insight:
-      "Celui qui apparaît en premier capte l'appel, la réservation ou le devis.",
+      "Les trois premiers résultats locaux captent l'essentiel des appels et demandes.",
+    source: "Backlinko · étude SERP locale (agrégat sectoriel)",
   },
   {
     value: 3,
@@ -27,15 +30,17 @@ const COMPETITION_KEYPOINTS: MarketingKeypoint[] = [
     label: "Pour vous juger",
     insight:
       "Un site faible ou absent, et c'est votre concurrent qui paraît professionnel.",
+    source: "Google Research · first impressions web",
   },
   {
     value: 2500,
-    prefix: "CHF ",
-    suffix: ".-",
+    prefix: "≈ CHF ",
+    suffix: "",
     formatLocale: true,
-    label: "Perdus chaque mois",
+    label: "Non convertis par mois",
     insight:
-      "Des clients qui auraient pu vous choisir, s'ils vous avaient trouvés en ligne.",
+      "Estimation pour 2–3 demandes locales perdues × panier moyen artisan PME romande.",
+    source: "Estimation Merlin · panier moyen ≈ 800.- CHF / demande",
   },
 ];
 

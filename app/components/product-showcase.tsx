@@ -21,6 +21,11 @@ type Scene = {
 
 const SCENES: Scene[] = [
   {
+    id: "vitrine",
+    module: "Site vitrine",
+    title: "Simple à lire. Facile à contacter.",
+  },
+  {
     id: "analytics",
     module: "Analytics & suivi",
     title: "Voyez qui vient, reste, convertit",
@@ -46,6 +51,114 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const SCENE_DURATION = 12000;
 const enter = { duration: 0.65, ease };
 const stagger = 0.14;
+
+function VitrineUi() {
+  const services = [
+    { name: "Rénovation complète", price: "Sur devis" },
+    { name: "Maçonnerie & gros œuvre", price: "Dès 95 CHF/h" },
+    { name: "Carrelage & finitions", price: "Sur devis" },
+  ];
+
+  return (
+    <div className="showcase-vitrine-min">
+      <motion.div
+        className="showcase-vitrine-min-visual"
+        initial={{ opacity: 0, scale: 1.02 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.12, ...enter }}
+      >
+        <Image
+          src="/nicolas.jpg"
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 520px, (min-width: 640px) 45vw, 100vw"
+          quality={92}
+          className="object-cover"
+          priority
+        />
+      </motion.div>
+
+      <div className="showcase-vitrine-min-content">
+        <motion.p
+          className="showcase-vitrine-min-brand"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, ...enter }}
+        >
+          Nicolas Travaux
+        </motion.p>
+
+        <motion.p
+          className="showcase-vitrine-min-meta"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.26, ...enter }}
+        >
+          Lausanne · Artisan indépendant
+        </motion.p>
+
+        <motion.h4
+          className="showcase-vitrine-min-title"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.32, ...enter }}
+        >
+          Clair sur le prix,
+          <br />
+          solide sur le résultat
+        </motion.h4>
+
+        <motion.p
+          className="showcase-vitrine-min-text"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38, ...enter }}
+        >
+          Gros œuvre, rénovation et finitions pour particuliers. Un interlocuteur,
+          un devis détaillé.
+        </motion.p>
+
+        <motion.ul
+          className="showcase-vitrine-min-list"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.44, ...enter }}
+        >
+          {services.map((service, i) => (
+            <motion.li
+              key={service.name}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.48 + i * 0.06, duration: 0.45, ease }}
+            >
+              <span>{service.name}</span>
+              <span>{service.price}</span>
+            </motion.li>
+          ))}
+        </motion.ul>
+
+        <motion.div
+          className="showcase-vitrine-min-actions"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.62, ...enter }}
+        >
+          <span className="showcase-vitrine-min-cta">Demander un devis</span>
+          <span className="showcase-vitrine-min-phone">078 000 00 00</span>
+        </motion.div>
+
+        <motion.p
+          className="showcase-vitrine-min-foot"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, ...enter }}
+        >
+          4,9 ★ · 38 avis Google
+        </motion.p>
+      </div>
+    </div>
+  );
+}
 
 function DashHeader({
   eyebrow,
@@ -483,6 +596,8 @@ function RdvUi() {
 
 function SceneUi({ sceneId }: { sceneId: string }) {
   switch (sceneId) {
+    case "vitrine":
+      return <VitrineUi />;
     case "analytics":
       return <AnalyticsUi />;
     case "catalogue":
@@ -521,8 +636,8 @@ export function ProductShowcase() {
             <span className="text-red">.</span>
           </h2>
           <p className="t-body-on-dark mt-6 max-w-md">
-            Chaque module répond à un besoin concret. Vous ne payez que ce
-            qui vous sert.
+            Le site que vos clients voient — plus les outils qui tournent
+            derrière. Chaque module répond à un besoin concret.
           </p>
         </MotionDiv>
 

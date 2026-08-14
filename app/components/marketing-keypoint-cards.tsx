@@ -17,6 +17,7 @@ export type MarketingKeypoint = {
   formatLocale?: boolean;
   label: string;
   insight: string;
+  source?: string;
 };
 
 function AnimatedValue({
@@ -92,7 +93,13 @@ function KeypointCard({
           {String(index + 1).padStart(2, "0")}
         </span>
         <p className="keypoint-card-value">
-          {point.displayText ?? (
+          {point.displayText != null ? (
+            <>
+              {point.prefix}
+              {point.displayText}
+              {point.suffix}
+            </>
+          ) : (
             <AnimatedValue
               value={point.value ?? 0}
               active={inView}
@@ -104,6 +111,9 @@ function KeypointCard({
         </p>
         <p className="keypoint-card-label">{point.label}</p>
         <p className="keypoint-card-insight">{point.insight}</p>
+        {point.source ? (
+          <p className="keypoint-card-source">{point.source}</p>
+        ) : null}
       </article>
     </MotionItem>
   );

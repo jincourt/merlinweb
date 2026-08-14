@@ -8,29 +8,36 @@ import {
 
 const KEYPOINTS: MarketingKeypoint[] = [
   {
-    value: 80,
+    value: 97,
     suffix: "%",
-    label: "Recherchent en ligne",
-    insight: "Sans site, vous n'existez pas sur Google.",
-  },
-  {
-    value: 77,
-    suffix: "%",
-    label: "Veulent réserver en ligne",
-    insight: "Vos clients veulent agir sans passer par le téléphone.",
-  },
-  {
-    value: 56,
-    suffix: "%",
-    label: "Exigent l'achat en ligne",
-    insight: "Catalogue et commande deviennent la norme.",
-  },
-  {
-    value: 51,
-    suffix: "%",
-    label: "Jugent sur le web",
+    label: "Cherchent en ligne",
     insight:
-      "La crédibilité d'une entreprise se décide en ligne — souvent avant le premier contact.",
+      "Avant de vous appeler, vos prospects tapent votre métier sur Google ou Maps.",
+    source: "Think with Google · Consumer Insights, 2024",
+  },
+  {
+    value: 88,
+    suffix: "%",
+    label: "Consultent les avis",
+    insight:
+      "La note et les témoignages en ligne pèsent autant qu'une recommandation.",
+    source: "BrightLocal · Local Consumer Review Survey, 2024",
+  },
+  {
+    value: 53,
+    suffix: "%",
+    label: "Jugent sur le design",
+    insight:
+      "Un site daté ou absent = entreprise peu fiable aux yeux du visiteur.",
+    source: "Stanford Web Credibility Research (étude de référence)",
+  },
+  {
+    value: 46,
+    suffix: "%",
+    label: "Quittent un site lent",
+    insight:
+      "Chaque seconde de chargement coûte des contacts — surtout sur mobile.",
+    source: "Google · Think with Google, Core Web Vitals",
   },
 ];
 
