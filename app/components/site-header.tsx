@@ -15,11 +15,10 @@ export function SiteHeader() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const hero = document.getElementById("offre");
-    if (!hero) return;
-
     function update() {
-      const heroBottom = hero.getBoundingClientRect().bottom;
+      const el = document.getElementById("offre");
+      if (!el) return;
+      const heroBottom = el.getBoundingClientRect().bottom;
       setVisible(heroBottom <= 96);
     }
 
