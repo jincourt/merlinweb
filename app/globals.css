@@ -1877,6 +1877,115 @@ body {
   color: rgba(0, 0, 0, 0.12);
 }
 
+.keypoint-card-on-red {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.keypoint-card-on-red:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 20px 48px -28px rgba(0, 0, 0, 0.35);
+}
+
+.keypoint-card-on-red .keypoint-accent {
+  color: var(--white);
+}
+
+.keypoint-card-on-red .keypoint-card-label {
+  color: var(--white);
+}
+
+.keypoint-card-on-red .keypoint-card-insight {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.keypoint-card-on-red .keypoint-card-index {
+  color: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Pourquoi Merlin ── */
+
+.why-merlin-section {
+  background: var(--white);
+  color: var(--black);
+}
+
+.why-merlin-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.why-merlin-point {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--gray-bg);
+  padding: 1.5rem 1.5rem 1.625rem;
+  overflow: hidden;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+@media (min-width: 640px) {
+  .why-merlin-point {
+    padding: 1.75rem 1.75rem 1.875rem;
+  }
+}
+
+.why-merlin-point:hover {
+  border-color: rgba(218, 41, 28, 0.2);
+  box-shadow: 0 18px 40px -28px rgba(218, 41, 28, 0.16);
+}
+
+.why-merlin-point-highlight {
+  background: var(--white);
+  border-color: rgba(218, 41, 28, 0.28);
+}
+
+.why-merlin-point-highlight .why-merlin-point-value {
+  color: var(--red);
+}
+
+.why-merlin-point-n {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  color: rgba(0, 0, 0, 0.14);
+}
+
+.why-merlin-point-value {
+  margin: 0;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.375rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--black);
+}
+
+.why-merlin-point-label {
+  margin: 0.875rem 0 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--black);
+}
+
+.why-merlin-point-insight {
+  margin: 0.5rem 0 0;
+  max-width: 28rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+
 /* ── Product showcase ── */
 
 .showcase-section {

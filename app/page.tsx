@@ -4,6 +4,8 @@ import { MerlinLogo } from "./components/ui";
 import { InviteSection } from "./components/invite-section";
 import { SiteFooter } from "./components/site-footer";
 import { MarketingKeypoints } from "./components/marketing-keypoints";
+import { MarketingCompetition } from "./components/marketing-competition";
+import { MarketingWhyMerline } from "./components/marketing-why-merline";
 import { ProductShowcase } from "./components/product-showcase";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
@@ -97,14 +99,13 @@ export default function Home() {
                   Offre promotionnelle
                 </span>
                 <h2 className="t-display mt-4 text-[clamp(2rem,5vw,3.5rem)] text-white">
-                  Un site professionnel,
+                  Un site personnalisé,
                   <br />
                   livré en 7 jours
                 </h2>
                 <p className="t-body-on-dark mt-6 max-w-md">
-                  Offre limitée à 0 CHF pour les premiers clients.
-                  Pas de template — chaque site est conçu sur mesure
-                  par notre équipe.
+                  Offre limitée à 0 CHF. Pas de template — chaque site est
+                  conçu sur mesure par notre équipe.
                 </p>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <a href="#devis" className="btn-white">
@@ -181,9 +182,11 @@ export default function Home() {
           </div>
         </section>
 
+        <MarketingCompetition />
+
         {/* ── PROCESSUS — gris foncé / blanc ── */}
         <section id="processus" className="bg-gray-dark text-white">
-          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-6 sm:pb-8">
+          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-20 sm:pb-28">
             <MotionDiv>
               <span className="t-mono-on-dark block !text-[1rem] !text-white/70">
                 Modules
@@ -224,6 +227,8 @@ export default function Home() {
             </MotionStagger>
           </div>
         </section>
+
+        <MarketingWhyMerline />
       </main>
 
       <InviteSection />

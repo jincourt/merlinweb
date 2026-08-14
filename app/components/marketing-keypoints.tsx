@@ -1,22 +1,12 @@
 "use client";
 
+import { MotionDiv } from "./motion";
 import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "motion/react";
-import { useEffect, useRef, useState } from "react";
-import { MotionDiv, MotionItem, MotionStagger } from "./motion";
+  KeypointGrid,
+  type MarketingKeypoint,
+} from "./marketing-keypoint-cards";
 
-type Keypoint = {
-  value: number;
-  suffix: string;
-  label: string;
-  insight: string;
-};
-
-const KEYPOINTS: Keypoint[] = [
+const KEYPOINTS: MarketingKeypoint[] = [
   {
     value: 80,
     suffix: "%",
@@ -36,78 +26,13 @@ const KEYPOINTS: Keypoint[] = [
     insight: "Catalogue et commande deviennent la norme.",
   },
   {
-    value: 7,
-    suffix: "j",
-    label: "Pour être en ligne",
-    insight: "Merlin livre un site pro en une semaine.",
+    value: 51,
+    suffix: "%",
+    label: "Jugent sur le web",
+    insight:
+      "La crédibilité d'une entreprise se décide en ligne — souvent avant le premier contact.",
   },
 ];
-
-function AnimatedValue({
-  value,
-  active,
-}: {
-  value: number;
-  active: boolean;
-}) {
-  const motionValue = useMotionValue(0);
-  const spring = useSpring(motionValue, {
-    stiffness: 70,
-    damping: 20,
-    mass: 0.9,
-  });
-  const display = useTransform(spring, (v) => Math.round(v));
-
-  useEffect(() => {
-    motionValue.set(active ? value : 0);
-  }, [active, value, motionValue]);
-
-  return <motion.span>{display}</motion.span>;
-}
-
-function KeypointCard({
-  point,
-  index,
-}: {
-  point: Keypoint;
-  index: number;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setInView(true);
-      },
-      { threshold: 0.35 },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <MotionItem soft>
-      <div ref={cardRef} className="keypoint-card">
-        <div className="keypoint-card-value">
-          <span className="keypoint-accent">
-            <AnimatedValue value={point.value} active={inView} />
-            {point.suffix}
-          </span>
-        </div>
-        <p className="keypoint-card-label">{point.label}</p>
-        <p className="keypoint-card-insight">{point.insight}</p>
-        <span className="keypoint-card-index" aria-hidden>
-          {String(index + 1).padStart(2, "0")}
-        </span>
-      </div>
-    </MotionItem>
-  );
-}
 
 export function MarketingKeypoints() {
   return (
@@ -125,15 +50,7 @@ export function MarketingKeypoints() {
           </h2>
         </MotionDiv>
 
-        <MotionStagger
-          className="keypoints-grid mt-14 sm:mt-16"
-          delay={0.06}
-          stagger={0.1}
-        >
-          {KEYPOINTS.map((point, index) => (
-            <KeypointCard key={point.label} point={point} index={index} />
-          ))}
-        </MotionStagger>
+        <KeypointGrid points={KEYPOINTS} className="mt-14 sm:mt-16" />
       </div>
     </section>
   );
