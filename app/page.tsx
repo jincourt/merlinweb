@@ -107,7 +107,7 @@ export default function Home() {
                   Offre limitée à 0 CHF. Pas de template — chaque site est
                   conçu sur mesure par notre équipe.
                 </p>
-                <div className="mt-8 hidden sm:flex flex-wrap items-center gap-4">
+                <div className="mt-8 flex flex-wrap items-center gap-4">
                   <a href="#devis" className="btn-white">
                     Réserver ma place
                     <ArrowRight size={14} strokeWidth={2} aria-hidden />
@@ -120,15 +120,6 @@ export default function Home() {
 
               <div className="sm:hidden">
                 <OfferPriceCard />
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <a href="#devis" className="btn-white">
-                    Réserver ma place
-                    <ArrowRight size={14} strokeWidth={2} aria-hidden />
-                  </a>
-                  <span className="t-mono-on-dark !text-white/50">
-                    {PROMO_SPOTS_LEFT} place{PROMO_SPOTS_LEFT > 1 ? "s" : ""} restante{PROMO_SPOTS_LEFT > 1 ? "s" : ""}
-                  </span>
-                </div>
               </div>
               <MotionDiv delay={0.15} className="hidden sm:block">
                 <OfferPriceCard animate />
