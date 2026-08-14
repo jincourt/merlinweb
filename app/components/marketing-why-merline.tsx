@@ -80,7 +80,7 @@ export function MarketingWhyMerline() {
 
           <MotionStagger className="why-merlin-points" stagger={0.08} delay={0.06}>
             {WHY_MERLIN_POINTS.map((point) => (
-              <MotionItem key={point.n} soft>
+              <MotionItem key={point.n} soft className="flex min-w-0">
                 <article
                   className={`why-merlin-point${point.highlight ? " why-merlin-point-highlight" : ""}`}
                 >

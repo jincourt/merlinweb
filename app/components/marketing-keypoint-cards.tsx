@@ -47,13 +47,11 @@ function AnimatedValue({
   }, [active, value, motionValue]);
 
   return (
-    <span className="keypoint-animated-value">
-      <span className="keypoint-animated-value-live">
-        {prefix}
-        <motion.span>{display}</motion.span>
-        {suffix}
-      </span>
-    </span>
+    <>
+      {prefix}
+      <motion.span>{display}</motion.span>
+      {suffix}
+    </>
   );
 }
 
@@ -66,7 +64,7 @@ function KeypointCard({
   index: number;
   variant: "light" | "red";
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
@@ -86,49 +84,27 @@ function KeypointCard({
 
   const cardClass =
     variant === "red" ? "keypoint-card keypoint-card-on-red" : "keypoint-card";
-  const hasCurrency = Boolean(point.prefix?.trim());
-  const valueClass = hasCurrency
-    ? "keypoint-card-value keypoint-card-value-currency"
-    : "keypoint-card-value";
 
   return (
-    <MotionItem soft>
-      <div ref={cardRef} className={cardClass}>
-        <div className={valueClass}>
-          {point.displayText ? (
-            <span className="keypoint-accent">{point.displayText}</span>
-          ) : hasCurrency ? (
-            <>
-              <span className="keypoint-accent keypoint-value-prefix">
-                {point.prefix?.trim()}
-              </span>
-              <span className="keypoint-accent keypoint-value-main">
-                <AnimatedValue
-                  value={point.value ?? 0}
-                  active={inView}
-                  formatLocale={point.formatLocale}
-                  suffix={point.suffix}
-                />
-              </span>
-            </>
-          ) : (
-            <span className="keypoint-accent">
-              <AnimatedValue
-                value={point.value ?? 0}
-                active={inView}
-                formatLocale={point.formatLocale}
-                prefix={point.prefix}
-                suffix={point.suffix}
-              />
-            </span>
-          )}
-        </div>
-        <p className="keypoint-card-label">{point.label}</p>
-        <p className="keypoint-card-insight">{point.insight}</p>
+    <MotionItem soft className="flex min-w-0">
+      <article ref={cardRef} className={cardClass}>
         <span className="keypoint-card-index" aria-hidden>
           {String(index + 1).padStart(2, "0")}
         </span>
-      </div>
+        <p className="keypoint-card-value">
+          {point.displayText ?? (
+            <AnimatedValue
+              value={point.value ?? 0}
+              active={inView}
+              formatLocale={point.formatLocale}
+              prefix={point.prefix}
+              suffix={point.suffix}
+            />
+          )}
+        </p>
+        <p className="keypoint-card-label">{point.label}</p>
+        <p className="keypoint-card-insight">{point.insight}</p>
+      </article>
     </MotionItem>
   );
 }

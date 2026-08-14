@@ -526,10 +526,6 @@ export function QuoteWizard() {
       <AnimatePresence mode="wait">
         {step === CONTACT_STEP && (
           <motion.div key="contact" {...stepTransition} className="space-y-5">
-            <p className="t-body text-sm">
-              Réservez votre place — nous revenons vers vous sous 24h.
-              Les modules se configurent à l&apos;étape suivante.
-            </p>
             <div>
               <label htmlFor="email" className="t-mono">
                 Email
