@@ -1,14 +1,15 @@
 import { HeroGeometry } from "./components/hero-geometry";
 import { DevisWizard } from "./components/devis-wizard";
 import { MerlinLogo } from "./components/ui";
-import { BuilderCta } from "./components/builder-cta";
 import { InviteSection } from "./components/invite-section";
 import { SiteFooter } from "./components/site-footer";
+import { MarketingKeypoints } from "./components/marketing-keypoints";
+import { ProductShowcase } from "./components/product-showcase";
 import { MotionDiv, MotionItem, MotionStagger } from "./components/motion";
 import { TiltCard } from "./components/tilt-card";
 import { PromoBasePrice } from "./components/promo-base-price";
 import { CATEGORY_META, PROMO_SPOTS_LEFT, PROMO_SPOTS_TOTAL } from "@/lib/options";
-import { Mail, Phone } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const MODULES = [
@@ -105,15 +106,14 @@ export default function Home() {
                   Pas de template — chaque site est conçu sur mesure
                   par notre équipe.
                 </p>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <a href="tel:+41786041544" className="btn-outline-white">
-                    <Phone size={14} strokeWidth={2} aria-hidden />
-                    0786041544
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <a href="#devis" className="btn-white">
+                    Réserver ma place
+                    <ArrowRight size={14} strokeWidth={2} aria-hidden />
                   </a>
-                  <a href="mailto:merlineapp@gmail.com" className="btn-outline-white">
-                    <Mail size={14} strokeWidth={2} aria-hidden />
-                    merlineapp@gmail.com
-                  </a>
+                  <span className="t-mono-on-dark !text-white/50">
+                    {PROMO_SPOTS_LEFT} place{PROMO_SPOTS_LEFT > 1 ? "s" : ""} restante{PROMO_SPOTS_LEFT > 1 ? "s" : ""}
+                  </span>
                 </div>
               </MotionDiv>
 
@@ -127,6 +127,10 @@ export default function Home() {
           </div>
         </section>
 
+        <MarketingKeypoints />
+
+        <ProductShowcase />
+
         {/* ── DEVIS — blanc / noir ── */}
         <section id="devis" className="bg-white text-black scroll-mt-8">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
@@ -136,15 +140,14 @@ export default function Home() {
                   Configurez votre site
                 </span>
                 <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2.5rem,6vw,4.5rem)] text-black">
-                  Choisissez vos
+                  Réservez
                   <br />
-                  modules
+                  votre place
                   <span className="text-black/40">.</span>
                 </h2>
                 <p className="t-body mt-6 max-w-sm">
-                  Site de base offert à 0 CHF. Ajoutez les fonctionnalités
-                  dont vous avez besoin — devis transparent, envoi direct
-                  à notre équipe.
+                  Commencez par vos coordonnées — nous revenons sous 24h.
+                  Configurez ensuite les modules dont vous avez besoin.
                 </p>
                 <div className="mt-6 max-w-xs">
                   <div className="flex items-center justify-between gap-4">
@@ -223,7 +226,6 @@ export default function Home() {
         </section>
       </main>
 
-      <BuilderCta />
       <InviteSection />
       <SiteFooter />
     </>

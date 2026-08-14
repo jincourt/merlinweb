@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Gift, LogOut, Eye, FileText, CheckSquare, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Gift,
+  LogOut,
+  Eye,
+  FileText,
+  CheckSquare,
+  X,
+  Images,
+} from "lucide-react";
 import { MerlinLogo } from "./ui";
 
 const NAV = [
@@ -45,20 +55,33 @@ export function AdminSidebar({ isOpen = false, onNavigate }: AdminSidebarProps) 
       </div>
 
       <nav className="admin-sidebar-nav">
-        {NAV.map(({ href, label, icon: Icon, exact }) => {
-          const active = exact ? pathname === href : pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              onClick={onNavigate}
-              className={`admin-sidebar-link${active ? " admin-sidebar-link-active" : ""}`}
-            >
-              <Icon size={16} strokeWidth={1.75} aria-hidden />
-              {label}
-            </Link>
-          );
-        })}
+        <div className="admin-sidebar-nav-main">
+          {NAV.map(({ href, label, icon: Icon, exact }) => {
+            const active = exact ? pathname === href : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={onNavigate}
+                className={`admin-sidebar-link${active ? " admin-sidebar-link-active" : ""}`}
+              >
+                <Icon size={16} strokeWidth={1.75} aria-hidden />
+                {label}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="admin-sidebar-nav-bottom">
+          <Link
+            href="/admin/library"
+            onClick={onNavigate}
+            className={`admin-sidebar-link${pathname.startsWith("/admin/library") ? " admin-sidebar-link-active" : ""}`}
+          >
+            <Images size={16} strokeWidth={1.75} aria-hidden />
+            Library
+          </Link>
+        </div>
       </nav>
 
       <div className="admin-sidebar-footer">

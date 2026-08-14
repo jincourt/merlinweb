@@ -36,6 +36,9 @@ export type VisitorRow = {
   utm_campaign: string | null;
   invite_code: string | null;
   session_count: number;
+  max_scroll_depth: number;
+  last_duration_sec: number;
+  max_duration_sec: number;
   first_seen_at: string;
   last_seen_at: string;
 };

@@ -40,6 +40,7 @@ export default async function AdminVisitesPage() {
                 <th>Première visite</th>
                 <th>Dernière visite</th>
                 <th>Sessions</th>
+                <th>Engagement</th>
                 <th>Pages</th>
                 <th>Provenance</th>
                 <th>Appareil</th>
@@ -56,6 +57,23 @@ export default async function AdminVisitesPage() {
                     {formatAdminDate(visitor.last_seen_at)}
                   </td>
                   <td>{visitor.session_count}</td>
+                  <td>
+                    <div className="admin-table-contact">
+                      <span>{visitor.max_scroll_depth} % scroll</span>
+                      {visitor.last_duration_sec > 0 && (
+                        <span className="admin-table-muted">
+                          {visitor.last_duration_sec}s
+                          {visitor.max_duration_sec > visitor.last_duration_sec
+                            ? ` · max ${visitor.max_duration_sec}s`
+                            : ""}
+                        </span>
+                      )}
+                      {visitor.max_scroll_depth === 0 &&
+                        visitor.last_duration_sec === 0 && (
+                          <span className="admin-table-muted">—</span>
+                        )}
+                    </div>
+                  </td>
                   <td>
                     <div className="admin-table-contact">
                       <span>{visitor.first_path}</span>

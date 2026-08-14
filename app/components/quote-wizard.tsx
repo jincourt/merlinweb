@@ -14,8 +14,9 @@ import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
 
-const STEPS = ["Options", "Contact"] as const;
-const CONTACT_STEP = 1;
+const STEPS = ["Contact", "Modules"] as const;
+const CONTACT_STEP = 0;
+const OPTIONS_STEP = 1;
 const CUSTOM_OPTION_ID = "personnalise";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -323,7 +324,7 @@ export function QuoteWizard() {
     });
   }
 
-  function validateContact() {
+  function validateContactFields() {
     const hasEmail = email.trim().length > 0;
     const hasPhone = phone.trim().length > 0;
 
@@ -339,16 +340,33 @@ export function QuoteWizard() {
       setErrorMsg("Numéro de téléphone invalide.");
       return false;
     }
-    if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
-      setErrorMsg("Décrivez votre besoin personnalisé.");
-      return false;
-    }
 
     return true;
   }
 
+  function validateSubmission() {
+    if (!validateContactFields()) return false;
+    if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
+      setErrorMsg("Décrivez votre besoin personnalisé.");
+      return false;
+    }
+    return true;
+  }
+
   function next() {
-    if (step === 0 && !isLastOptionPhase) {
+    if (step === CONTACT_STEP) {
+      if (!validateContactFields()) return;
+      setErrorMsg("");
+      setStep(OPTIONS_STEP);
+      setOptionPhase(0);
+      return;
+    }
+
+    if (step === OPTIONS_STEP && !isLastOptionPhase) {
+      if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
+        setErrorMsg("Décrivez votre besoin personnalisé.");
+        return;
+      }
       setErrorMsg("");
       setOptionPhase((p) => p + 1);
       return;
@@ -359,21 +377,19 @@ export function QuoteWizard() {
       return;
     }
 
-    setErrorMsg("");
-    setStep(CONTACT_STEP);
+    void submit();
   }
 
   function back() {
     setErrorMsg("");
 
-    if (step === CONTACT_STEP) {
-      setStep(0);
-      setOptionPhase(OPTION_CATEGORIES.length - 1);
+    if (step === OPTIONS_STEP && optionPhase > 0) {
+      setOptionPhase((p) => p - 1);
       return;
     }
 
-    if (step === 0 && optionPhase > 0) {
-      setOptionPhase((p) => p - 1);
+    if (step === OPTIONS_STEP) {
+      setStep(CONTACT_STEP);
       return;
     }
 
@@ -381,7 +397,7 @@ export function QuoteWizard() {
   }
 
   async function submit() {
-    if (!validateContact()) return;
+    if (!validateSubmission()) return;
 
     setStatus("loading");
     setErrorMsg("");
@@ -437,7 +453,9 @@ export function QuoteWizard() {
     );
   }
 
-  const showBack = step > 0 || (step === 0 && optionPhase > 0);
+  const showBack = step > CONTACT_STEP || (step === OPTIONS_STEP && optionPhase > 0);
+  const isLastStep =
+    step === OPTIONS_STEP && isLastOptionPhase;
 
   return (
     <div className="wizard-panel">
@@ -466,18 +484,12 @@ export function QuoteWizard() {
       </MotionStagger>
 
       <AnimatePresence mode="wait">
-        {step === 0 && (
-          <OptionsPanel
-            categoryIndex={optionPhase}
-            selected={selected}
-            customRequest={customRequest}
-            onToggle={toggleOption}
-            onCustomRequestChange={setCustomRequest}
-          />
-        )}
-
         {step === CONTACT_STEP && (
           <motion.div key="contact" {...stepTransition} className="space-y-5">
+            <p className="t-body text-sm">
+              Réservez votre place — nous revenons vers vous sous 24h.
+              Les modules se configurent à l&apos;étape suivante.
+            </p>
             <div>
               <label htmlFor="email" className="t-mono">
                 Email
@@ -521,6 +533,16 @@ export function QuoteWizard() {
             </div>
           </motion.div>
         )}
+
+        {step === OPTIONS_STEP && (
+          <OptionsPanel
+            categoryIndex={optionPhase}
+            selected={selected}
+            customRequest={customRequest}
+            onToggle={toggleOption}
+            onCustomRequestChange={setCustomRequest}
+          />
+        )}
       </AnimatePresence>
 
       {errorMsg && (
@@ -545,11 +567,7 @@ export function QuoteWizard() {
           <span />
         )}
 
-        {step === 0 ? (
-          <button type="button" onClick={next} className="btn-primary">
-            Continuer
-          </button>
-        ) : (
+        {isLastStep ? (
           <button
             type="button"
             onClick={submit}
@@ -557,6 +575,10 @@ export function QuoteWizard() {
             className="btn-primary disabled:opacity-50"
           >
             {status === "loading" ? "Envoi…" : "Envoyer la demande"}
+          </button>
+        ) : (
+          <button type="button" onClick={next} className="btn-primary">
+            Continuer
           </button>
         )}
       </MotionDiv>

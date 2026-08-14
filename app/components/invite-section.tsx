@@ -66,7 +66,7 @@ export function InviteSection() {
 
   return (
     <section className="bg-gray-dark text-white border-t border-[var(--border-on-dark)]">
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-12 sm:pt-16 pb-20 sm:pb-28">
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-20 sm:pt-28 pb-20 sm:pb-28">
         <MotionDiv immediate className="mx-auto max-w-2xl text-center">
           <h2 className="t-display text-[clamp(2rem,5vw,3.25rem)] text-white">
             Profiter de 50.- par invitation
