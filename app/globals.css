@@ -1801,28 +1801,34 @@ body {
 
 .keypoints-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+.keypoints-grid > * {
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {
   .keypoints-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
   }
 }
 
 .keypoint-card {
   position: relative;
+  container-type: inline-size;
   border: 1px solid var(--border);
   border-radius: 1.25rem;
   background: var(--white);
-  padding: 1.75rem 1.5rem 1.875rem;
+  padding: 1.25rem 1rem 1.5rem;
   min-height: 11rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
+  min-width: 0;
   transition:
     border-color 0.3s,
     box-shadow 0.3s;
@@ -1843,30 +1849,64 @@ body {
 .keypoint-card-value {
   font-family: var(--font-geist-sans), sans-serif;
   font-weight: 500;
-  font-size: clamp(2.75rem, 8vw, 4.25rem);
+  font-size: clamp(1.375rem, 14cqw, 4.25rem);
   letter-spacing: -0.05em;
   line-height: 0.95;
   font-variant-numeric: tabular-nums;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .keypoint-card-value {
+    font-size: clamp(1.75rem, 12cqw, 4.25rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .keypoint-card-value {
+    font-size: clamp(2rem, 10cqw, 4.25rem);
+  }
+}
+
+.keypoint-card-value-currency {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05em;
+  line-height: 1;
+}
+
+.keypoint-card-value-currency .keypoint-value-prefix {
+  font-size: 0.42em;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.keypoint-card-value-currency .keypoint-value-main {
+  font-size: 1em;
+  line-height: 0.95;
+}
+
+@container (min-width: 220px) {
+  .keypoint-card-value-currency {
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    column-gap: 0.2em;
+  }
 }
 
 .keypoint-animated-value {
-  display: inline-grid;
+  display: inline-block;
+  max-width: 100%;
   vertical-align: bottom;
 }
 
-.keypoint-animated-value-stable,
 .keypoint-animated-value-live {
-  grid-area: 1 / 1;
-}
-
-.keypoint-animated-value-stable {
-  visibility: hidden;
-  pointer-events: none;
-  user-select: none;
-}
-
-.keypoint-animated-value-live {
-  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .keypoint-accent {
@@ -1879,6 +1919,7 @@ body {
   font-weight: 500;
   color: var(--black);
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .keypoint-card-insight {
@@ -1886,6 +1927,7 @@ body {
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .keypoint-card-index {

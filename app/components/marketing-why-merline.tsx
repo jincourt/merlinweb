@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Star } from "lucide-react";
+import { PROMO_SPOTS_LEFT } from "@/lib/options";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 
 const WHY_MERLIN_POINTS = [
@@ -26,6 +27,21 @@ const WHY_MERLIN_POINTS = [
     highlight: true,
   },
 ];
+
+function ReserveCta({ className = "" }: { className?: string }) {
+  return (
+    <div className={`flex flex-wrap items-center gap-4 ${className}`.trim()}>
+      <a href="#devis" className="btn-primary">
+        Réserver ma place
+        <ArrowRight size={14} strokeWidth={2} aria-hidden />
+      </a>
+      <span className="t-mono !text-black/50">
+        {PROMO_SPOTS_LEFT} place{PROMO_SPOTS_LEFT > 1 ? "s" : ""} restante
+        {PROMO_SPOTS_LEFT > 1 ? "s" : ""}
+      </span>
+    </div>
+  );
+}
 
 export function MarketingWhyMerline() {
   return (
@@ -59,10 +75,7 @@ export function MarketingWhyMerline() {
               allie sur mesure et accessibilité — avec un accompagnement humain
               de A à Z.
             </p>
-            <a href="#devis" className="btn-primary mt-8 hidden lg:inline-flex">
-              Réserver ma place
-              <ArrowRight size={14} strokeWidth={2} aria-hidden />
-            </a>
+            <ReserveCta className="mt-8 hidden lg:flex" />
           </MotionDiv>
 
           <MotionStagger className="why-merlin-points" stagger={0.08} delay={0.06}>
@@ -82,10 +95,7 @@ export function MarketingWhyMerline() {
             ))}
           </MotionStagger>
 
-          <a href="#devis" className="btn-primary mt-8 lg:hidden">
-            Réserver ma place
-            <ArrowRight size={14} strokeWidth={2} aria-hidden />
-          </a>
+          <ReserveCta className="mt-0 lg:hidden" />
         </div>
       </div>
     </section>

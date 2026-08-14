@@ -41,7 +41,6 @@ function AnimatedValue({
   const format = (v: number) =>
     formatLocale ? Math.round(v).toLocaleString("fr-CH") : String(Math.round(v));
   const display = useTransform(spring, format);
-  const stableText = `${prefix}${format(value)}${suffix}`;
 
   useEffect(() => {
     motionValue.set(active ? value : 0);
@@ -49,9 +48,6 @@ function AnimatedValue({
 
   return (
     <span className="keypoint-animated-value">
-      <span className="keypoint-animated-value-stable" aria-hidden>
-        {stableText}
-      </span>
       <span className="keypoint-animated-value-live">
         {prefix}
         <motion.span>{display}</motion.span>
@@ -90,15 +86,33 @@ function KeypointCard({
 
   const cardClass =
     variant === "red" ? "keypoint-card keypoint-card-on-red" : "keypoint-card";
+  const hasCurrency = Boolean(point.prefix?.trim());
+  const valueClass = hasCurrency
+    ? "keypoint-card-value keypoint-card-value-currency"
+    : "keypoint-card-value";
 
   return (
     <MotionItem soft>
       <div ref={cardRef} className={cardClass}>
-        <div className="keypoint-card-value">
-          <span className="keypoint-accent">
-            {point.displayText ? (
-              point.displayText
-            ) : (
+        <div className={valueClass}>
+          {point.displayText ? (
+            <span className="keypoint-accent">{point.displayText}</span>
+          ) : hasCurrency ? (
+            <>
+              <span className="keypoint-accent keypoint-value-prefix">
+                {point.prefix?.trim()}
+              </span>
+              <span className="keypoint-accent keypoint-value-main">
+                <AnimatedValue
+                  value={point.value ?? 0}
+                  active={inView}
+                  formatLocale={point.formatLocale}
+                  suffix={point.suffix}
+                />
+              </span>
+            </>
+          ) : (
+            <span className="keypoint-accent">
               <AnimatedValue
                 value={point.value ?? 0}
                 active={inView}
@@ -106,8 +120,8 @@ function KeypointCard({
                 prefix={point.prefix}
                 suffix={point.suffix}
               />
-            )}
-          </span>
+            </span>
+          )}
         </div>
         <p className="keypoint-card-label">{point.label}</p>
         <p className="keypoint-card-insight">{point.insight}</p>
