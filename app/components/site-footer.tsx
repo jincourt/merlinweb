@@ -40,7 +40,7 @@ export function SiteFooter() {
             </p>
           </MotionItem>
 
-          <MotionItem>
+          <MotionItem className="lg:text-center">
             <p className="t-mono-on-dark">Menu</p>
             <ul className="mt-4 space-y-2">
               {MENU_LINKS.map(({ label, href }) => (

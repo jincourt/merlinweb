@@ -23,10 +23,14 @@ function AnimatedValue({
   value,
   active,
   formatLocale,
+  prefix = "",
+  suffix = "",
 }: {
   value: number;
   active: boolean;
   formatLocale?: boolean;
+  prefix?: string;
+  suffix?: string;
 }) {
   const motionValue = useMotionValue(0);
   const spring = useSpring(motionValue, {
@@ -34,17 +38,27 @@ function AnimatedValue({
     damping: 20,
     mass: 0.9,
   });
-  const display = useTransform(spring, (v) =>
-    formatLocale
-      ? Math.round(v).toLocaleString("fr-CH")
-      : String(Math.round(v)),
-  );
+  const format = (v: number) =>
+    formatLocale ? Math.round(v).toLocaleString("fr-CH") : String(Math.round(v));
+  const display = useTransform(spring, format);
+  const stableText = `${prefix}${format(value)}${suffix}`;
 
   useEffect(() => {
     motionValue.set(active ? value : 0);
   }, [active, value, motionValue]);
 
-  return <motion.span>{display}</motion.span>;
+  return (
+    <span className="keypoint-animated-value">
+      <span className="keypoint-animated-value-stable" aria-hidden>
+        {stableText}
+      </span>
+      <span className="keypoint-animated-value-live">
+        {prefix}
+        <motion.span>{display}</motion.span>
+        {suffix}
+      </span>
+    </span>
+  );
 }
 
 function KeypointCard({
@@ -85,15 +99,13 @@ function KeypointCard({
             {point.displayText ? (
               point.displayText
             ) : (
-              <>
-                {point.prefix}
-                <AnimatedValue
-                  value={point.value ?? 0}
-                  active={inView}
-                  formatLocale={point.formatLocale}
-                />
-                {point.suffix}
-              </>
+              <AnimatedValue
+                value={point.value ?? 0}
+                active={inView}
+                formatLocale={point.formatLocale}
+                prefix={point.prefix}
+                suffix={point.suffix}
+              />
             )}
           </span>
         </div>

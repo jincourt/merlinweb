@@ -55,12 +55,11 @@ export function MarketingWhyMerline() {
               <span className="text-red">.</span>
             </h2>
             <p className="t-body mt-6 max-w-md">
-              Les grandes agences facturent des montants élevés. Les outils
-              «&nbsp;faciles&nbsp;» produisent des sites interchangeables. Merlin
-              se situe entre les deux&nbsp;: sur mesure, accessible, exigeant —
-              avec un accompagnement humain du début à la mise en ligne.
+              Entre agences hors de prix et templates interchangeables, Merlin
+              allie sur mesure et accessibilité — avec un accompagnement humain
+              de A à Z.
             </p>
-            <a href="#devis" className="btn-primary mt-8">
+            <a href="#devis" className="btn-primary mt-8 hidden lg:inline-flex">
               Réserver ma place
               <ArrowRight size={14} strokeWidth={2} aria-hidden />
             </a>
@@ -82,6 +81,11 @@ export function MarketingWhyMerline() {
               </MotionItem>
             ))}
           </MotionStagger>
+
+          <a href="#devis" className="btn-primary mt-8 lg:hidden">
+            Réserver ma place
+            <ArrowRight size={14} strokeWidth={2} aria-hidden />
+          </a>
         </div>
       </div>
     </section>

@@ -1846,6 +1846,27 @@ body {
   font-size: clamp(2.75rem, 8vw, 4.25rem);
   letter-spacing: -0.05em;
   line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+}
+
+.keypoint-animated-value {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+
+.keypoint-animated-value-stable,
+.keypoint-animated-value-live {
+  grid-area: 1 / 1;
+}
+
+.keypoint-animated-value-stable {
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.keypoint-animated-value-live {
+  white-space: nowrap;
 }
 
 .keypoint-accent {
