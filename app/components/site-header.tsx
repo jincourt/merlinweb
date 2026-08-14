@@ -41,12 +41,19 @@ export function SiteHeader() {
       }`}
       aria-hidden={!visible}
     >
-      <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="flex items-center group" aria-label="Merlin — accueil">
+      <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-6 px-5 sm:gap-8 sm:px-8">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center group"
+          aria-label="Merlin — accueil"
+        >
           <MerlinLogo className="h-8 w-8" />
         </Link>
 
-        <nav className="flex items-center gap-5 sm:gap-7" aria-label="Navigation principale">
+        <nav
+          className="ml-auto flex min-w-0 items-center gap-3 sm:gap-7"
+          aria-label="Navigation principale"
+        >
           {NAV.map((item) => (
             <a
               key={item.href}

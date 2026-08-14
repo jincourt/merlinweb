@@ -14,7 +14,7 @@ const COMPETITION_KEYPOINTS: MarketingKeypoint[] = [
     label: "Visitent le site d'un concurrent",
     insight:
       "Avant de vous contacter, ils comparent plusieurs prestataires en ligne.",
-    source: "BrightLocal · Local Consumer Review Survey, 2024",
+    source: "BrightLocal · Enquête avis consommateurs locaux, 2024",
   },
   {
     displayText: "3",
@@ -22,7 +22,7 @@ const COMPETITION_KEYPOINTS: MarketingKeypoint[] = [
     label: "Clics sur le top 3 Google",
     insight:
       "Les trois premiers résultats locaux captent l'essentiel des appels et demandes.",
-    source: "Backlinko · étude SERP locale (agrégat sectoriel)",
+    source: "Backlinko · Étude SERP locale (agrégat sectoriel)",
   },
   {
     value: 3,
@@ -30,7 +30,7 @@ const COMPETITION_KEYPOINTS: MarketingKeypoint[] = [
     label: "Pour vous juger",
     insight:
       "Un site faible ou absent, et c'est votre concurrent qui paraît professionnel.",
-    source: "Google Research · first impressions web",
+    source: "Google Research · Premières impressions web",
   },
   {
     value: 2500,

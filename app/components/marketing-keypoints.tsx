@@ -13,7 +13,7 @@ const KEYPOINTS: MarketingKeypoint[] = [
     label: "Cherchent en ligne",
     insight:
       "Avant de vous appeler, vos prospects tapent votre métier sur Google ou Maps.",
-    source: "Think with Google · Consumer Insights, 2024",
+    source: "Think with Google · Insights consommateurs, 2024",
   },
   {
     value: 88,
@@ -21,7 +21,7 @@ const KEYPOINTS: MarketingKeypoint[] = [
     label: "Consultent les avis",
     insight:
       "La note et les témoignages en ligne pèsent autant qu'une recommandation.",
-    source: "BrightLocal · Local Consumer Review Survey, 2024",
+    source: "BrightLocal · Enquête avis consommateurs locaux, 2024",
   },
   {
     value: 53,
@@ -29,7 +29,7 @@ const KEYPOINTS: MarketingKeypoint[] = [
     label: "Jugent sur le design",
     insight:
       "Un site daté ou absent = entreprise peu fiable aux yeux du visiteur.",
-    source: "Stanford Web Credibility Research (étude de référence)",
+    source: "Stanford · Recherche crédibilité web (étude de référence)",
   },
   {
     value: 46,
@@ -37,7 +37,7 @@ const KEYPOINTS: MarketingKeypoint[] = [
     label: "Quittent un site lent",
     insight:
       "Chaque seconde de chargement coûte des contacts — surtout sur mobile.",
-    source: "Google · Think with Google, Core Web Vitals",
+    source: "Google · Core Web Vitals (Think with Google)",
   },
 ];
 
