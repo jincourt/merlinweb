@@ -4,6 +4,7 @@ import { Resend } from "resend";
 
 const RECIPIENT = process.env.QUOTE_RECIPIENT_EMAIL ?? "wizhd55@gmail.com";
 const MAX_COMMENT_LENGTH = 2000;
+const MAX_NAME_LENGTH = 120;
 
 function renderStars(stars: number) {
   return "★".repeat(stars) + "☆".repeat(5 - stars);
@@ -26,7 +27,7 @@ function dbErrorMessage(code: string | undefined): string {
   return "Impossible d'enregistrer la note.";
 }
 
-async function sendNoteEmail(stars: number, comment: string) {
+async function sendNoteEmail(stars: number, name: string, comment: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("Note saved but RESEND_API_KEY is missing.");
@@ -36,6 +37,10 @@ async function sendNoteEmail(stars: number, comment: string) {
   const resend = new Resend(apiKey);
   const from =
     process.env.RESEND_FROM_EMAIL ?? "Merlin <onboarding@resend.dev>";
+
+  const nameHtml = name
+    ? `<p style="margin:0 0 6px"><strong>Nom ou entreprise</strong></p><p style="margin:0 0 24px;color:#444">${name.replace(/</g, "&lt;")}</p>`
+    : "";
 
   const commentHtml = comment
     ? `<p style="margin:0 0 6px"><strong>Commentaire</strong></p><p style="margin:0 0 24px;color:#444;white-space:pre-wrap">${comment.replace(/</g, "&lt;")}</p>`
@@ -51,6 +56,7 @@ async function sendNoteEmail(stars: number, comment: string) {
         <h1 style="font-size:22px;font-weight:500;margin:16px 0 24px">Nouvelle note reçue</h1>
         <p style="margin:0 0 6px"><strong>Note</strong></p>
         <p style="margin:0 0 24px;font-size:20px;color:#da291c;letter-spacing:0.08em">${renderStars(stars)} <span style="font-size:14px;color:#666">(${stars}/5)</span></p>
+        ${nameHtml}
         ${commentHtml}
       </div>
     `,
@@ -69,6 +75,10 @@ export async function POST(request: Request) {
     }
 
     const stars = parseStars(body.stars);
+    const name =
+      typeof body.name === "string"
+        ? body.name.trim().slice(0, MAX_NAME_LENGTH)
+        : "";
     const comment =
       typeof body.comment === "string"
         ? body.comment.trim().slice(0, MAX_COMMENT_LENGTH)
@@ -84,6 +94,7 @@ export async function POST(request: Request) {
     const supabase = createServiceSupabase();
     const { error: dbError } = await supabase.from("note").insert({
       stars,
+      name,
       comment,
     });
 
@@ -95,7 +106,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await sendNoteEmail(stars, comment);
+    await sendNoteEmail(stars, name, comment);
 
     return NextResponse.json({ success: true });
   } catch (error) {

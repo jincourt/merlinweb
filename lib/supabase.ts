@@ -11,6 +11,7 @@ export type InviteCodeRow = {
 export type NoteRow = {
   id: string;
   stars: number;
+  name: string;
   comment: string;
   created_at: string;
 };
@@ -107,6 +108,7 @@ export type Database = {
         Row: NoteRow;
         Insert: {
           stars: number;
+          name?: string;
           comment?: string;
           id?: string;
           created_at?: string;

@@ -2,6 +2,7 @@
 create table if not exists public.note (
   id uuid primary key default gen_random_uuid(),
   stars smallint not null check (stars >= 1 and stars <= 5),
+  name text not null default '',
   comment text not null default '',
   created_at timestamptz not null default now()
 );

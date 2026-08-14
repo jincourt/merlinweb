@@ -13,6 +13,7 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState(0);
+  const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -31,6 +32,7 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
   function resetForm() {
     setStars(0);
     setHover(0);
+    setName("");
     setComment("");
     setStatus("idle");
     setErrorMsg("");
@@ -55,7 +57,7 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
       const res = await fetch("/api/note", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stars, comment }),
+        body: JSON.stringify({ stars, name, comment }),
       });
 
       const data = await res.json();
@@ -153,7 +155,22 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
                   ))}
                 </div>
 
-                <label htmlFor="note-comment" className="t-mono mt-8 block">
+                <label htmlFor="note-name" className="t-mono mt-8 block">
+                  Nom ou Entreprise
+                </label>
+                <input
+                  id="note-name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Votre nom ou raison sociale"
+                  maxLength={120}
+                  autoComplete="name"
+                  className="wizard-input mt-3"
+                  disabled={status === "loading"}
+                />
+
+                <label htmlFor="note-comment" className="t-mono mt-5 block">
                   Commentaire
                 </label>
                 <textarea
