@@ -6,7 +6,6 @@ import { LeaveNoteLink } from "./leave-note-link";
 const MENU_LINKS = [
   { label: "Offre", href: "#offre" },
   { label: "Modules", href: "#processus" },
-  { label: "Devis", href: "#devis" },
 ];
 
 export function SiteFooter() {

@@ -8,7 +8,6 @@ import { MerlinLogo } from "./ui";
 const NAV = [
   { href: "#offre", label: "Offre" },
   { href: "#processus", label: "Modules" },
-  { href: "#devis", label: "Devis" },
 ];
 
 export function SiteHeader() {
@@ -65,7 +64,7 @@ export function SiteHeader() {
           ))}
           <a
             href="#devis"
-            className="hidden sm:inline-flex btn-primary !py-2 !px-4 !text-[0.625rem]"
+            className="inline-flex shrink-0 btn-primary !py-2 !px-3 !text-[0.5625rem] sm:!px-4 sm:!text-[0.625rem]"
           >
             Réserver ma place
             <ArrowRight size={12} strokeWidth={2} aria-hidden />
