@@ -6,89 +6,49 @@ import {
   formatChf,
   formatOptionPrice,
 } from "@/lib/options";
-import { isValidPhone, phonesMatch } from "@/lib/phone";
+import {
+  parseQuoteContact,
+  resolveInviteCode,
+  validateQuoteContact,
+} from "@/lib/quote-request";
 import { createServiceSupabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const RECIPIENT = process.env.QUOTE_RECIPIENT_EMAIL ?? "wizhd55@gmail.com";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function isValidEmail(value: string) {
-  return EMAIL_RE.test(value);
-}
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = typeof body.email === "string" ? body.email.trim() : "";
-    const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+    const contact = parseQuoteContact(body);
+    const contactError = validateQuoteContact(contact);
+    if (contactError) {
+      return NextResponse.json({ error: contactError }, { status: 400 });
+    }
+
     const selectedIds = Array.isArray(body.selectedIds)
       ? (body.selectedIds as string[])
       : [];
-    const message =
-      typeof body.message === "string" ? body.message.trim() : "";
-    const inviteCode =
-      typeof body.inviteCode === "string"
-        ? body.inviteCode.trim().toUpperCase()
+    const quoteId =
+      typeof body.quoteId === "string" && UUID_RE.test(body.quoteId.trim())
+        ? body.quoteId.trim()
         : "";
 
-    if (!email && !phone) {
-      return NextResponse.json(
-        { error: "Indiquez un email ou un téléphone." },
-        { status: 400 },
-      );
-    }
-    if (email && !isValidEmail(email)) {
-      return NextResponse.json(
-        { error: "Adresse email invalide." },
-        { status: 400 },
-      );
-    }
-    if (phone && !isValidPhone(phone)) {
-      return NextResponse.json(
-        { error: "Numéro de téléphone invalide." },
-        { status: 400 },
-      );
-    }
-
-    let inviteCodeHtml = "";
     const supabase = createServiceSupabase();
+    const inviteResult = await resolveInviteCode(
+      supabase,
+      contact.inviteCode,
+      contact.phone,
+    );
 
-    if (inviteCode) {
-      const { data: inviteRow, error: inviteError } = await supabase
-        .from("code")
-        .select("code, phone")
-        .eq("code", inviteCode)
-        .maybeSingle();
-
-      if (inviteError) {
-        console.error("Invite code lookup error:", inviteError);
-        return NextResponse.json(
-          { error: "Impossible de vérifier le code d'invitation." },
-          { status: 500 },
-        );
-      }
-
-      if (!inviteRow) {
-        return NextResponse.json(
-          { error: "Code d'invitation invalide." },
-          { status: 400 },
-        );
-      }
-
-      if (phone && phonesMatch(phone, inviteRow.phone)) {
-        return NextResponse.json(
-          {
-            error:
-              "Vous ne pouvez pas utiliser votre propre code d'invitation.",
-          },
-          { status: 400 },
-        );
-      }
-
-      inviteCodeHtml = `<p style="margin:0 0 6px"><strong>Code d'invitation</strong></p><p style="margin:0 0 24px;font-family:monospace;font-size:16px;color:#da291c">${inviteRow.code}</p>`;
+    if (!inviteResult.ok) {
+      return NextResponse.json(
+        { error: inviteResult.error },
+        { status: inviteResult.status },
+      );
     }
 
     const validIds = [
@@ -103,21 +63,64 @@ export async function POST(request: Request) {
     );
     const total = computeTotal(validIds);
 
-    const { error: dbError } = await supabase.from("quote").insert({
-      email,
-      phone,
+    const payload = {
+      email: contact.email,
+      phone: contact.phone,
       selected_ids: validIds,
-      message,
-      invite_code: inviteCode,
+      message: contact.message,
+      invite_code: contact.inviteCode,
       total,
-    });
+      status: "submitted" as const,
+    };
 
-    if (dbError) {
-      console.error("Quote insert error:", dbError);
-      return NextResponse.json(
-        { error: "Impossible d'enregistrer la demande." },
-        { status: 500 },
-      );
+    if (quoteId) {
+      const { data: existing, error: fetchError } = await supabase
+        .from("quote")
+        .select("id, status")
+        .eq("id", quoteId)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Quote fetch error:", fetchError);
+        return NextResponse.json(
+          { error: "Impossible d'enregistrer la demande." },
+          { status: 500 },
+        );
+      }
+
+      if (existing?.status === "draft") {
+        const { error: updateError } = await supabase
+          .from("quote")
+          .update(payload)
+          .eq("id", quoteId);
+
+        if (updateError) {
+          console.error("Quote update error:", updateError);
+          return NextResponse.json(
+            { error: "Impossible d'enregistrer la demande." },
+            { status: 500 },
+          );
+        }
+      } else {
+        const { error: insertError } = await supabase.from("quote").insert(payload);
+        if (insertError) {
+          console.error("Quote insert error:", insertError);
+          return NextResponse.json(
+            { error: "Impossible d'enregistrer la demande." },
+            { status: 500 },
+          );
+        }
+      }
+    } else {
+      const { error: dbError } = await supabase.from("quote").insert(payload);
+
+      if (dbError) {
+        console.error("Quote insert error:", dbError);
+        return NextResponse.json(
+          { error: "Impossible d'enregistrer la demande." },
+          { status: 500 },
+        );
+      }
     }
 
     const apiKey = process.env.RESEND_API_KEY;
@@ -142,6 +145,7 @@ export async function POST(request: Request) {
             .join("")
         : `<tr><td colspan="2" style="padding:8px 0;color:#666">Aucune option supplémentaire</td></tr>`;
 
+    const { email, phone, message } = contact;
     const contactSubject = [email, phone].filter(Boolean).join(" · ");
     const contactHtml = [
       email
@@ -162,7 +166,7 @@ export async function POST(request: Request) {
           <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:#888">Merlin · Demande de devis</p>
           <h1 style="font-size:22px;font-weight:500;margin:16px 0 24px">Nouvelle configuration site</h1>
           ${contactHtml}
-          ${inviteCodeHtml}
+          ${inviteResult.inviteCodeHtml}
           ${
             message
               ? `<p style="margin:0 0 6px"><strong>Message</strong></p><p style="margin:0 0 24px;color:#444">${message.replace(/</g, "&lt;")}</p>`

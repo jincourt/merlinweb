@@ -43,6 +43,8 @@ export type VisitorRow = {
   last_seen_at: string;
 };
 
+export type QuoteStatus = "draft" | "submitted";
+
 export type QuoteRow = {
   id: string;
   email: string;
@@ -51,6 +53,7 @@ export type QuoteRow = {
   message: string;
   invite_code: string;
   total: number;
+  status: QuoteStatus;
   created_at: string;
 };
 
@@ -153,6 +156,7 @@ export type Database = {
           message?: string;
           invite_code?: string;
           total?: number;
+          status?: QuoteStatus;
           id?: string;
           created_at?: string;
         };

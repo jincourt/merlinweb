@@ -20,6 +20,7 @@ function quoteMatchesSearch(quote: AdminQuote, query: string) {
     quote.message,
     quote.totalFormatted,
     String(quote.total),
+    quote.status === "draft" ? "brouillon" : "soumis",
     ...quote.optionLabels,
     ...quote.selected_ids,
     formatAdminDate(quote.created_at),
@@ -86,6 +87,7 @@ export function AdminClientsSearch({ quotes }: AdminClientsSearchProps) {
             <thead>
               <tr>
                 <th>Date</th>
+                <th>Statut</th>
                 <th>Contact</th>
                 <th>Options</th>
                 <th>Total</th>
@@ -97,6 +99,15 @@ export function AdminClientsSearch({ quotes }: AdminClientsSearchProps) {
                 <tr key={quote.id}>
                   <td className="admin-table-date">
                     {formatAdminDate(quote.created_at)}
+                  </td>
+                  <td>
+                    <span
+                      className={`admin-table-tag${
+                        quote.status === "draft" ? " admin-table-tag-muted" : ""
+                      }`}
+                    >
+                      {quote.status === "draft" ? "Brouillon" : "Soumis"}
+                    </span>
                   </td>
                   <td>
                     <div className="admin-table-contact">

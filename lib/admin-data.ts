@@ -28,7 +28,10 @@ export async function getAdminStats(): Promise<AdminStats> {
       await Promise.all([
         supabase.from("visitor").select("id", { count: "exact", head: true }),
         supabase.from("code").select("id", { count: "exact", head: true }),
-        supabase.from("quote").select("id", { count: "exact", head: true }),
+        supabase
+          .from("quote")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "submitted"),
         supabase.from("note").select("id", { count: "exact", head: true }),
         supabase
           .from("invoice")
@@ -86,6 +89,7 @@ export async function getAdminQuotes(): Promise<AdminQuote[]> {
 
       return {
         ...row,
+        status: row.status === "draft" ? "draft" : "submitted",
         selected_ids: ids,
         optionLabels,
         totalFormatted: formatChf(row.total),

@@ -9,7 +9,7 @@ import {
 } from "@/lib/options";
 import { AnimatePresence, motion } from "motion/react";
 import { Search, X } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
@@ -18,6 +18,7 @@ const STEPS = ["Contact", "Modules"] as const;
 const CONTACT_STEP = 0;
 const OPTIONS_STEP = 1;
 const CUSTOM_OPTION_ID = "personnalise";
+const QUOTE_ID_KEY = "merlin_quote_id";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s()./-]{8,20}$/;
@@ -307,6 +308,13 @@ export function QuoteWizard() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [quoteId, setQuoteId] = useState<string | null>(null);
+  const [leadSaving, setLeadSaving] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem(QUOTE_ID_KEY);
+    if (stored) setQuoteId(stored);
+  }, []);
 
   const isLastOptionPhase =
     optionPhase >= OPTION_CATEGORIES.length - 1;
@@ -353,9 +361,49 @@ export function QuoteWizard() {
     return true;
   }
 
-  function next() {
+  async function captureLead() {
+    setLeadSaving(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/quote/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          phone: phone.trim(),
+          message: message.trim(),
+          inviteCode: inviteCode ?? undefined,
+          quoteId: quoteId ?? undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(data.error ?? "Impossible d'enregistrer vos coordonnées.");
+        return false;
+      }
+
+      if (typeof data.id === "string") {
+        setQuoteId(data.id);
+        sessionStorage.setItem(QUOTE_ID_KEY, data.id);
+      }
+
+      return true;
+    } catch {
+      setErrorMsg("Erreur réseau. Réessayez.");
+      return false;
+    } finally {
+      setLeadSaving(false);
+    }
+  }
+
+  async function next() {
     if (step === CONTACT_STEP) {
       if (!validateContactFields()) return;
+      const captured = await captureLead();
+      if (!captured) return;
       setErrorMsg("");
       setStep(OPTIONS_STEP);
       setOptionPhase(0);
@@ -412,6 +460,7 @@ export function QuoteWizard() {
           selectedIds: selected,
           message: buildSubmissionMessage(message, customRequest),
           inviteCode: inviteCode ?? undefined,
+          quoteId: quoteId ?? undefined,
         }),
       });
 
@@ -424,6 +473,7 @@ export function QuoteWizard() {
       }
 
       setStatus("success");
+      sessionStorage.removeItem(QUOTE_ID_KEY);
     } catch {
       setStatus("error");
       setErrorMsg("Erreur réseau. Réessayez.");
@@ -577,8 +627,13 @@ export function QuoteWizard() {
             {status === "loading" ? "Envoi…" : "Envoyer la demande"}
           </button>
         ) : (
-          <button type="button" onClick={next} className="btn-primary">
-            Continuer
+          <button
+            type="button"
+            onClick={() => void next()}
+            disabled={leadSaving}
+            className="btn-primary disabled:opacity-50"
+          >
+            {leadSaving ? "Enregistrement…" : "Continuer"}
           </button>
         )}
       </MotionDiv>

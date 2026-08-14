@@ -992,6 +992,10 @@ body {
   color: var(--red);
 }
 
+.admin-table-tag-muted {
+  color: var(--muted);
+}
+
 .admin-table-options {
   margin: 0;
   padding: 0;
