@@ -309,7 +309,6 @@ export function QuoteWizard() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [quoteId, setQuoteId] = useState<string | null>(null);
-  const [leadSaving, setLeadSaving] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem(QUOTE_ID_KEY);
@@ -362,9 +361,6 @@ export function QuoteWizard() {
   }
 
   async function captureLead() {
-    setLeadSaving(true);
-    setErrorMsg("");
-
     try {
       const res = await fetch("/api/quote/lead", {
         method: "POST",
@@ -382,31 +378,25 @@ export function QuoteWizard() {
 
       if (!res.ok) {
         setErrorMsg(data.error ?? "Impossible d'enregistrer vos coordonnées.");
-        return false;
+        return;
       }
 
       if (typeof data.id === "string") {
         setQuoteId(data.id);
         sessionStorage.setItem(QUOTE_ID_KEY, data.id);
       }
-
-      return true;
     } catch {
       setErrorMsg("Erreur réseau. Réessayez.");
-      return false;
-    } finally {
-      setLeadSaving(false);
     }
   }
 
-  async function next() {
+  function next() {
     if (step === CONTACT_STEP) {
       if (!validateContactFields()) return;
-      const captured = await captureLead();
-      if (!captured) return;
       setErrorMsg("");
       setStep(OPTIONS_STEP);
       setOptionPhase(0);
+      void captureLead();
       return;
     }
 
@@ -627,13 +617,8 @@ export function QuoteWizard() {
             {status === "loading" ? "Envoi…" : "Envoyer la demande"}
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => void next()}
-            disabled={leadSaving}
-            className="btn-primary disabled:opacity-50"
-          >
-            {leadSaving ? "Enregistrement…" : "Continuer"}
+          <button type="button" onClick={next} className="btn-primary">
+            Continuer
           </button>
         )}
       </MotionDiv>
