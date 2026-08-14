@@ -42,9 +42,8 @@ export function SiteHeader() {
       aria-hidden={!visible}
     >
       <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center group" aria-label="Merlin — accueil">
           <MerlinLogo className="h-8 w-8" />
-          <span className="t-mono !text-black !text-[0.625rem]">Merlin</span>
         </Link>
 
         <nav className="flex items-center gap-5 sm:gap-7" aria-label="Navigation principale">
