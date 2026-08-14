@@ -1,4 +1,4 @@
-import { createServiceSupabase } from "@/lib/supabase";
+import { createServiceSupabase, type VisitorRow } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
 const UUID_RE =
@@ -42,7 +42,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, skipped: true });
     }
 
-    const payload: Record<string, number> = {};
+    const payload: Partial<
+      Pick<VisitorRow, "max_scroll_depth" | "last_duration_sec" | "max_duration_sec">
+    > = {};
 
     if (scrollDepth !== null) {
       payload.max_scroll_depth = Math.max(existing.max_scroll_depth, scrollDepth);
