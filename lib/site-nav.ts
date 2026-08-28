@@ -3,8 +3,6 @@ export const SITE_HEADER_NAV = [
 ] as const;
 
 export const SITE_FOOTER_NAV = [
-  { label: "Services" },
-  { label: "Clients" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

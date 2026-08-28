@@ -43,17 +43,13 @@ function FooterLanguageLinks() {
 export function SiteFooter() {
   const content = useIntlayer("site");
 
-  const footerNav = [
-    { label: content.services, href: "/services" },
-    { label: content.clients, href: "/clients" },
-    { label: content.contact, href: "/contact" },
-  ];
+  const footerNav = [{ label: content.contact, href: "/contact" }];
 
-  const serviceLinks = [
-    { label: content.siteWeb, href: "/options/site-web" },
-    { label: content.infrastructure, href: "/options/site-web" },
-    { label: content.gestion, href: "/options/site-web" },
-    { label: content.interface, href: "/options/site-web" },
+  const serviceLabels = [
+    content.siteWeb,
+    content.infrastructure,
+    content.gestion,
+    content.interface,
   ];
 
   return (
@@ -91,14 +87,9 @@ export function SiteFooter() {
 
           <MotionItem>
             <ul className="space-y-3">
-              {serviceLinks.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className={`${footerTextClass} transition-colors hover:!text-black`}
-                  >
-                    {item.label}
-                  </Link>
+              {serviceLabels.map((label) => (
+                <li key={label}>
+                  <span className={footerTextClass}>{label}</span>
                 </li>
               ))}
             </ul>
