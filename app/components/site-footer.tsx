@@ -1,79 +1,117 @@
-import { Star } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Locales } from "intlayer";
+import { useIntlayer, useLocale } from "next-intlayer";
 import { MerlinLogo } from "./ui";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
-import { LeaveNoteLink } from "./leave-note-link";
 
-const MENU_LINKS = [
-  { label: "Offre", href: "#offre" },
-  { label: "Modules", href: "#processus" },
+const LOCALE_CODES = [
+  { locale: Locales.FRENCH, labelKey: "french" as const },
+  { locale: Locales.ENGLISH, labelKey: "english" as const },
+  { locale: Locales.GERMAN, labelKey: "german" as const },
 ];
 
-export function SiteFooter() {
+const footerTextClass =
+  "t-hero text-[clamp(1rem,1.5vw,1.125rem)] !text-black/75";
+
+function FooterLanguageLinks() {
+  const content = useIntlayer("site");
+  const { locale, setLocale } = useLocale({ onChange: "push" });
+
   return (
-    <footer className="bg-gray-dark text-white max-sm:border-t-0">
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-8 pb-14">
+    <ul className="space-y-3">
+      {LOCALE_CODES.map((item) => (
+        <li key={item.locale}>
+          <button
+            type="button"
+            onClick={() => setLocale(item.locale)}
+            aria-current={locale === item.locale ? "true" : undefined}
+            className={`${footerTextClass} transition-colors hover:!text-black ${
+              locale === item.locale ? "!text-black" : ""
+            }`}
+          >
+            {content[item.labelKey]}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function SiteFooter() {
+  const content = useIntlayer("site");
+
+  const footerNav = [
+    { label: content.services, href: "/services" },
+    { label: content.clients, href: "/clients" },
+    { label: content.contact, href: "/contact" },
+  ];
+
+  const serviceLinks = [
+    { label: content.siteWeb, href: "/options/site-web" },
+    { label: content.infrastructure, href: "/options/site-web" },
+    { label: content.gestion, href: "/options/site-web" },
+    { label: content.interface, href: "/options/site-web" },
+  ];
+
+  return (
+    <footer className="border-t border-black/20 bg-white text-black">
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 pt-10 pb-14">
         <MotionStagger
-          className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8"
           stagger={0.08}
         >
           <MotionItem>
             <div className="flex items-center gap-2.5">
-              <MerlinLogo className="h-8 w-8" red={false} />
-              <span className="t-mono-on-dark !text-white/85">Merlin</span>
+              <MerlinLogo className="h-8 w-8" black />
+              <span className="t-hero text-[clamp(1.125rem,2.5vw,1.5rem)] text-black">
+                {content.brand}
+              </span>
             </div>
-            <p className="mt-3 flex items-center gap-1.5 t-mono-on-dark !text-[0.875rem] !text-white/70">
-              <Star
-                size={16}
-                strokeWidth={0}
-                fill="currentColor"
-                className="text-white/85"
-                aria-hidden="true"
-              />
-              4.8/5
-            </p>
-            <LeaveNoteLink />
-            <p className="mt-4 text-sm text-white/45 leading-relaxed">
-              Studio web suisse · Lausanne, VD.
-              <br />
-              Sites personnalisés pour indépendants et PME.
-            </p>
           </MotionItem>
 
-          <MotionItem className="lg:text-center">
-            <p className="t-mono-on-dark">Menu</p>
-            <ul className="mt-4 space-y-2">
-              {MENU_LINKS.map(({ label, href }) => (
-                <li key={label}>
-                  <a href={href} className="tag tag-on-dark">
-                    {label}
-                  </a>
+          <MotionItem>
+            <nav aria-label={content.footerNavAria}>
+              <ul className="space-y-3">
+                {footerNav.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`${footerTextClass} transition-colors hover:!text-black`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </MotionItem>
+
+          <MotionItem>
+            <ul className="space-y-3">
+              {serviceLinks.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className={`${footerTextClass} transition-colors hover:!text-black`}
+                  >
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </MotionItem>
 
-          <MotionItem className="sm:col-span-2 sm:text-right lg:col-span-1 lg:ml-auto">
-            <p className="t-mono-on-dark">Contact</p>
-            <div className="mt-4 space-y-2 t-mono-on-dark !normal-case !tracking-normal !text-[0.75rem] leading-relaxed">
-              <a
-                href="mailto:merlineapp@gmail.com"
-                className="block hover:!text-white transition-colors"
-              >
-                merlineapp@gmail.com
-              </a>
-              <a
-                href="tel:+41786041544"
-                className="block hover:!text-white transition-colors"
-              >
-                078 604 15 44
-              </a>
-            </div>
+          <MotionItem>
+            <FooterLanguageLinks />
           </MotionItem>
         </MotionStagger>
 
-        <MotionDiv soft delay={0.15} className="mt-12 text-center">
-          <p className="t-mono-on-dark !text-[0.625rem]">
-            © {new Date().getFullYear()} Merlin · Tous droits réservés
+        <MotionDiv soft delay={0.15} className="mt-20 sm:mt-28 text-center">
+          <p className="t-hero-sub max-w-lg mx-auto text-black/45">
+            &ldquo;{content.footerTagline}&rdquo;
           </p>
         </MotionDiv>
       </div>

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getIntlayer } from "intlayer";
+import { getLocale } from "next-intlayer/server";
+import type { CategoryMeta } from "@/lib/options";
 import {
-  CATEGORY_META,
-  type CategoryMeta,
-  getOptionsForCategory,
-} from "@/lib/options";
-import { getOptionPageContent } from "@/lib/option-page-content";
+  getLocalizedOptionPageContent,
+  getLocalizedOptionsForCategory,
+} from "@/lib/localized-options";
+import { getLocalizedOptions } from "@/lib/get-localized-options";
 import { MerlinLogo } from "./ui";
 import { MotionDiv } from "./motion";
 import { SiteFooter } from "./site-footer";
@@ -24,12 +26,16 @@ function OptionBulletList({ items }: { items: string[] }) {
   );
 }
 
-export function OptionCategoryPage({ category }: Props) {
-  const meta = CATEGORY_META[category];
-  const options = getOptionsForCategory(category);
-  const otherCategories = Object.values(CATEGORY_META).filter(
-    (c) => c.id !== category,
+export async function OptionCategoryPage({ category }: Props) {
+  const locale = await getLocale();
+  const site = getIntlayer("site", locale);
+  const bundle = await getLocalizedOptions();
+  const meta = bundle.categoryMeta[category];
+  const options = getLocalizedOptionsForCategory(bundle, category);
+  const otherCategories = Object.values(bundle.categoryMeta).filter(
+    (item) => item.id !== category,
   );
+  const modulesAria = site.modulesAria.replace("{category}", meta.label);
 
   return (
     <>
@@ -38,22 +44,22 @@ export function OptionCategoryPage({ category }: Props) {
           <div className="relative z-10 mx-auto max-w-[1200px] px-5 sm:px-8 py-16 sm:py-24">
             <MotionDiv immediate>
               <Link
-                href="/#processus"
+                href="/#offre"
                 className="btn-outline-white !text-[0.625rem] !py-3 !px-4"
               >
                 <ArrowLeft size={14} strokeWidth={2} aria-hidden />
-                Retour
+                {site.back}
               </Link>
               <div className="mt-10 flex items-center gap-3">
                 <MerlinLogo className="h-10 w-10" red={false} />
-                <span className="t-mono-on-dark !text-white/85">Modules</span>
+                <span className="t-mono-on-dark !text-white/85">{site.modules}</span>
               </div>
               <h1 className="t-display mt-6 text-[clamp(2rem,5vw,3.5rem)] text-white">
                 {meta.label}
               </h1>
               <p className="t-body-on-dark mt-6 max-w-2xl">{meta.intro}</p>
-              <Link href="/#devis" className="btn-white mt-8">
-                Réserver ma place
+              <Link href="/#contact" className="btn-white mt-8">
+                {site.bookSpot}
               </Link>
             </MotionDiv>
           </div>
@@ -61,10 +67,7 @@ export function OptionCategoryPage({ category }: Props) {
 
         <section className="bg-white text-black">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
-            <nav
-              className="option-nav"
-              aria-label={`Modules ${meta.label}`}
-            >
+            <nav className="option-nav" aria-label={modulesAria}>
               {options.map((option) => (
                 <a
                   key={option.id}
@@ -78,7 +81,7 @@ export function OptionCategoryPage({ category }: Props) {
 
             <div className="space-y-0 mt-14 sm:mt-16">
               {options.map((option) => {
-                const content = getOptionPageContent(option.id);
+                const content = getLocalizedOptionPageContent(bundle, option.id);
                 const intro = option.detail ?? option.description;
 
                 return (
@@ -104,11 +107,11 @@ export function OptionCategoryPage({ category }: Props) {
                       </div>
                     ) : null}
 
-                    {option.footnote && (
+                    {option.footnote ? (
                       <p className="t-mono mt-6 !text-[0.625rem] !text-black/50">
                         * {option.footnote}
                       </p>
-                    )}
+                    ) : null}
                   </article>
                 );
               })}
@@ -119,15 +122,15 @@ export function OptionCategoryPage({ category }: Props) {
         <section className="bg-gray-dark text-white border-t border-[var(--border-on-dark)]">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-16 sm:py-20">
             <MotionDiv>
-              <span className="t-mono-on-dark">Autres catégories</span>
+              <span className="t-mono-on-dark">{site.otherCategories}</span>
               <div className="mt-6 flex flex-wrap gap-3">
-                {otherCategories.map((c) => (
+                {otherCategories.map((item) => (
                   <Link
-                    key={c.id}
-                    href={`/options/${c.slug}`}
+                    key={item.id}
+                    href={`/options/${item.slug}`}
                     className="btn-outline-white"
                   >
-                    {c.label}
+                    {item.label}
                   </Link>
                 ))}
               </div>

@@ -16,7 +16,7 @@ export type MarketingKeypoint = {
   prefix?: string;
   formatLocale?: boolean;
   label: string;
-  insight: string;
+  insight?: string;
   source?: string;
 };
 
@@ -110,7 +110,9 @@ function KeypointCard({
           )}
         </p>
         <p className="keypoint-card-label">{point.label}</p>
-        <p className="keypoint-card-insight">{point.insight}</p>
+        {point.insight ? (
+          <p className="keypoint-card-insight">{point.insight}</p>
+        ) : null}
         {point.source ? (
           <p className="keypoint-card-source">{point.source}</p>
         ) : null}

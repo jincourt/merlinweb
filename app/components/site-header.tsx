@@ -1,74 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useIntlayer } from "next-intlayer";
 import { MerlinLogo } from "./ui";
 
-const NAV = [
-  { href: "#offre", label: "Offre" },
-  { href: "#processus", label: "Modules" },
-];
+const navLinkClass =
+  "t-hero text-[clamp(1rem,1.5vw,1.125rem)] transition-colors hover:!text-black";
 
 export function SiteHeader() {
-  const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  const content = useIntlayer("site");
 
-  useEffect(() => {
-    function update() {
-      const el = document.getElementById("offre");
-      if (!el) return;
-      const heroBottom = el.getBoundingClientRect().bottom;
-      setVisible(heroBottom <= 96);
-    }
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
+  const navItems = [{ href: "/contact", label: content.contact }] as const;
 
   return (
-    <header
-      className={`site-header-scroll fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md text-black rule transition-all duration-300 ${
-        visible
-          ? "translate-y-0 opacity-100 pointer-events-auto"
-          : "-translate-y-full opacity-0 pointer-events-none"
-      }`}
-      aria-hidden={!visible}
-    >
-      <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-6 px-5 sm:gap-8 sm:px-8">
+    <header className="rule bg-white text-black">
+      <div className="mx-auto flex h-[4.5rem] w-full min-w-0 max-w-[1200px] items-center gap-6 px-5 sm:h-20 sm:gap-10 sm:px-8">
         <Link
           href="/"
           className="flex shrink-0 items-center group"
-          aria-label="Merlin — accueil"
+          aria-label={content.headerHomeAria}
         >
-          <MerlinLogo className="h-8 w-8" />
+          <MerlinLogo className="h-10 w-10 sm:h-11 sm:w-11" black />
         </Link>
 
         <nav
-          className="ml-auto flex min-w-0 items-center gap-3 sm:gap-7"
-          aria-label="Navigation principale"
+          className="ml-auto flex min-w-0 items-center gap-6 sm:gap-10"
+          aria-label={content.mainNavAria}
         >
-          {NAV.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="nav-link hover:!text-black transition-colors"
-            >
-              {item.label}
-            </a>
-          ))}
-          <a
-            href="#devis"
-            className="inline-flex shrink-0 btn-primary !py-2 !px-3 !text-[0.5625rem] sm:!px-4 sm:!text-[0.625rem]"
-          >
-            Réserver ma place
-            <ArrowRight size={12} strokeWidth={2} aria-hidden />
-          </a>
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`${navLinkClass} ${isActive ? "!text-black" : ""}`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </header>

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withIntlayerSync } from "next-intlayer/server";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pdfkit", "swissqrbill"],
@@ -13,4 +14,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withIntlayerSync(nextConfig);

@@ -49,7 +49,7 @@ export function AdminClientsSearch({ quotes }: AdminClientsSearchProps) {
     return (
       <div className="admin-empty">
         <p className="t-body">Aucune demande pour le moment.</p>
-        <Link href="/#devis" className="btn-outline mt-6">
+        <Link href="/#contact" className="btn-outline mt-6">
           Voir le formulaire
         </Link>
       </div>

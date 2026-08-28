@@ -1,12 +1,24 @@
 function MerlinLogo({
   className = "h-8 w-8",
   red = true,
+  black = false,
   blend = true,
 }: {
   className?: string;
   red?: boolean;
+  black?: boolean;
   blend?: boolean;
 }) {
+  if (black) {
+    return (
+      <span
+        className={`logo-black shrink-0 ${className}`}
+        role="img"
+        aria-label="Merlin"
+      />
+    );
+  }
+
   if (!red) {
     return (
       <img

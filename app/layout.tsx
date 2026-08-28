@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { IntlayerClientProvider } from "next-intlayer";
+import { getHTMLTextDir, getIntlayer } from "intlayer";
+import { getLocale } from "next-intlayer/server";
 import { VisitTracker } from "./components/visit-tracker";
 import "./globals.css";
 
@@ -14,28 +17,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Merlin — Studio web suisse · Lausanne",
-  description:
-    "Vos clients vous cherchent sur Google. Site sur mesure offert à 0 CHF, livré en 7 jours. Studio Merlin · Lausanne, canton de Vaud.",
-  openGraph: {
-    title: "Merlin — Studio web suisse · Lausanne",
-    description:
-      "Site vitrine sur mesure pour indépendants et PME. Offre à 0 CHF + 200.- CHF/an hébergement. Livraison 7 jours.",
-    locale: "fr_CH",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const meta = getIntlayer("metadata", locale);
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: {
+      title: meta.title,
+      description: meta.ogDescription,
+      locale: locale === "fr" ? "fr_CH" : locale === "de" ? "de_CH" : "en_CH",
+      type: "website",
+    },
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
+
   return (
     <html
-      lang="fr"
+      lang={locale}
+      dir={getHTMLTextDir(locale)}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <VisitTracker />
-        {children}
+        <IntlayerClientProvider locale={locale}>
+          <VisitTracker />
+          {children}
+        </IntlayerClientProvider>
       </body>
     </html>
   );

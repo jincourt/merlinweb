@@ -9,11 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@intlayer/swc": "^9.4.1",
     "@supabase/supabase-js": "^2.112.3",
     "html-to-image": "^1.11.13",
+    "intlayer": "^9.4.1",
     "lucide-react": "^1.31.0",
     "motion": "^13.1.0",
     "next": "16.3.0",
+    "next-intlayer": "^9.4.1",
     "pdfkit": "^0.19.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",

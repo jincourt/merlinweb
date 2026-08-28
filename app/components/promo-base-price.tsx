@@ -1,8 +1,11 @@
+"use client";
+
 import {
   BASE_OFFER,
   BASE_OFFER_ORIGINAL_PRICE,
   formatChf,
 } from "@/lib/options";
+import { useIntlayer } from "next-intlayer";
 
 type PromoBasePriceProps = {
   variant?: "hero" | "inline" | "spec";
@@ -13,6 +16,7 @@ export function PromoBasePrice({
   variant = "inline",
   className = "",
 }: PromoBasePriceProps) {
+  const site = useIntlayer("site");
   const originalLabel = formatChf(BASE_OFFER_ORIGINAL_PRICE);
   const promoLabel = formatChf(BASE_OFFER.price);
 
@@ -23,13 +27,13 @@ export function PromoBasePrice({
     return (
       <div className={`mt-10 ${className}`}>
         <p className="t-mono text-[0.625rem] sm:text-[0.6875rem] uppercase tracking-[0.14em] text-muted">
-          Au lieu de{" "}
-          <span className="text-black/45">{originalShort} CHF</span>
+          {site.insteadOf}{" "}
+          <span className="text-black/45">{originalShort} {site.chf}</span>
         </p>
         <p className="t-display mt-2 sm:mt-3 text-[clamp(4rem,14vw,7rem)] text-red leading-none">
           {promoShort}
           <span className="ml-2 t-mono !text-[1rem] align-middle text-muted">
-            CHF
+            {site.chf}
           </span>
         </p>
       </div>
@@ -51,7 +55,7 @@ export function PromoBasePrice({
   return (
     <span className={`inline-flex flex-wrap items-center gap-x-2 gap-y-1 ${className}`}>
       <span className="t-mono !text-[0.65em] uppercase tracking-[0.12em] text-muted opacity-80">
-        Au lieu de
+        {site.insteadOf}
       </span>
       <span className="text-muted opacity-60">{originalLabel}</span>
       <span className="text-black/30" aria-hidden="true">

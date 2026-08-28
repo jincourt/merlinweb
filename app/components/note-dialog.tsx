@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useIntlayer } from "next-intlayer";
 
 type NoteDialogProps = {
   open: boolean;
@@ -10,6 +11,7 @@ type NoteDialogProps = {
 };
 
 export function NoteDialog({ open, onClose }: NoteDialogProps) {
+  const content = useIntlayer("forms");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [stars, setStars] = useState(0);
   const [hover, setHover] = useState(0);
@@ -45,7 +47,7 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
 
   async function submit() {
     if (stars < 1) {
-      setErrorMsg("Sélectionnez au moins une étoile.");
+      setErrorMsg(content.noteErrorStars);
       setStatus("error");
       return;
     }
@@ -64,14 +66,14 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
 
       if (!res.ok) {
         setStatus("error");
-        setErrorMsg(data.error ?? "Erreur lors de l'envoi.");
+        setErrorMsg(data.error ?? content.errorSend);
         return;
       }
 
       setStatus("success");
     } catch {
       setStatus("error");
-      setErrorMsg("Erreur réseau. Réessayez.");
+      setErrorMsg(content.errorNetwork);
     }
   }
 
@@ -98,37 +100,33 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
           >
             {status === "success" ? (
               <>
-                <p className="t-mono !text-black">Merci</p>
+                <p className="t-mono !text-black">{content.noteThanks}</p>
                 <h2 className="t-display mt-4 text-2xl sm:text-3xl text-black">
-                  Note envoyée
+                  {content.noteSent}
                   <span className="text-red">.</span>
                 </h2>
-                <p className="t-body mt-4">
-                  Votre avis a bien été transmis à notre équipe.
-                </p>
+                <p className="t-body mt-4">{content.noteSentBody}</p>
                 <button
                   type="button"
                   onClick={handleClose}
                   className="btn-primary mt-8 w-full justify-center"
                 >
-                  Fermer
+                  {content.close}
                 </button>
               </>
             ) : (
               <>
-                <p className="t-mono !text-black">Votre avis</p>
+                <p className="t-mono !text-black">{content.noteYourReview}</p>
                 <h2 className="t-display mt-4 text-2xl sm:text-3xl text-black">
-                  Laisser une note
+                  {content.noteLeaveReview}
                   <span className="text-red">.</span>
                 </h2>
-                <p className="t-body mt-4">
-                  Comment s&apos;est passée votre expérience avec Merlin ?
-                </p>
+                <p className="t-body mt-4">{content.noteExperience}</p>
 
                 <div
                   className="mt-6 flex justify-center gap-1"
                   role="radiogroup"
-                  aria-label="Note sur 5 étoiles"
+                  aria-label={content.noteStarsAria}
                   onMouseLeave={() => setHover(0)}
                 >
                   {[1, 2, 3, 4, 5].map((value) => (
@@ -137,7 +135,11 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
                       type="button"
                       role="radio"
                       aria-checked={stars === value}
-                      aria-label={`${value} étoile${value > 1 ? "s" : ""}`}
+                      aria-label={
+                        value > 1
+                          ? content.noteStars.replace("{n}", String(value))
+                          : content.noteStar.replace("{n}", String(value))
+                      }
                       className="rounded p-1 transition-transform hover:scale-110"
                       onMouseEnter={() => setHover(value)}
                       onClick={() => setStars(value)}
@@ -156,14 +158,14 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
                 </div>
 
                 <label htmlFor="note-name" className="t-mono mt-8 block">
-                  Nom ou Entreprise
+                  {content.noteNameLabel}
                 </label>
                 <input
                   id="note-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Votre nom ou raison sociale"
+                  placeholder={content.noteNamePlaceholder}
                   maxLength={120}
                   autoComplete="name"
                   className="wizard-input mt-3"
@@ -171,24 +173,24 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
                 />
 
                 <label htmlFor="note-comment" className="t-mono mt-5 block">
-                  Commentaire
+                  {content.noteComment}
                 </label>
                 <textarea
                   id="note-comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Partagez votre expérience…"
+                  placeholder={content.noteCommentPlaceholder}
                   rows={4}
                   maxLength={2000}
                   className="wizard-input mt-3 resize-none"
                   disabled={status === "loading"}
                 />
 
-                {errorMsg && (
+                {errorMsg ? (
                   <p className="mt-3 text-sm text-error" role="alert">
                     {errorMsg}
                   </p>
-                )}
+                ) : null}
 
                 <button
                   type="button"
@@ -196,7 +198,7 @@ export function NoteDialog({ open, onClose }: NoteDialogProps) {
                   disabled={status === "loading"}
                   className="btn-primary mt-8 w-full justify-center disabled:opacity-50"
                 >
-                  {status === "loading" ? "Envoi…" : "Envoyer"}
+                  {status === "loading" ? content.sending : content.send}
                 </button>
               </>
             )}

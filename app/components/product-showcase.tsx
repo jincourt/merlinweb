@@ -624,24 +624,20 @@ export function ProductShowcase() {
 
   return (
     <section id="modules" className="showcase-section">
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-20 sm:py-28">
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 py-28 sm:py-40">
         <MotionDiv className="max-w-2xl">
-          <span className="t-mono block !text-[1rem] !text-white/70">
+          <h2 className="t-display text-[clamp(2rem,5vw,3.25rem)] text-white">
             Modules à la carte
-          </span>
-          <h2 className="t-display mt-6 sm:mt-8 text-[clamp(2rem,5vw,3.25rem)] text-white">
-            Un site qui travaille
-            <br />
-            pour votre activité
             <span className="text-red">.</span>
           </h2>
-          <p className="t-body-on-dark mt-6 max-w-md">
-            Le site que vos clients voient — plus les outils qui tournent
-            derrière. Chaque module répond à un besoin concret.
+          <p className="t-body-on-dark mt-6 max-w-lg">
+            Le site que vos clients voient, plus les outils qui tournent
+            derrière. Chaque module répond à un besoin concret de votre
+            activité.
           </p>
         </MotionDiv>
 
-        <div className="showcase-layout mt-14 sm:mt-16">
+        <div className="showcase-layout mt-16 sm:mt-20">
           <div className="showcase-nav-col">
             <div className="showcase-scene-nav" role="tablist" aria-label="Modules">
               {SCENES.map((s, i) => (

@@ -1,20 +1,15 @@
 "use client";
 
-import {
-  DEFAULT_SELECTED_OPTION_IDS,
-  OPTION_CATEGORIES,
-  SITE_OPTIONS,
-  filterOptionsByCategory,
-  type SiteOption,
-} from "@/lib/options";
+import { DEFAULT_SELECTED_OPTION_IDS, type SiteOption } from "@/lib/options";
+import { useLocalizedOptions } from "@/lib/use-localized-options";
 import { AnimatePresence, motion } from "motion/react";
 import { Search, X } from "lucide-react";
+import { useIntlayer } from "next-intlayer";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { MotionDiv, MotionItem, MotionStagger } from "./motion";
 import { PromoBasePrice } from "./promo-base-price";
 import { useInviteCode } from "./invite-provider";
 
-const STEPS = ["Contact", "Modules"] as const;
 const CONTACT_STEP = 0;
 const OPTIONS_STEP = 1;
 const CUSTOM_OPTION_ID = "personnalise";
@@ -56,10 +51,16 @@ function OptionLabel({
   );
 }
 
-function OptionCategoryTabs({ activeIndex }: { activeIndex: number }) {
+function OptionCategoryTabs({
+  activeIndex,
+  optionCategories,
+}: {
+  activeIndex: number;
+  optionCategories: { id: string; label: string }[];
+}) {
   return (
     <div className="option-filters mb-4">
-      {OPTION_CATEGORIES.map((category, index) => (
+      {optionCategories.map((category, index) => (
         <span
           key={category.id}
           aria-current={index === activeIndex ? "step" : undefined}
@@ -90,9 +91,14 @@ function filterOptionsBySearch(options: SiteOption[], query: string) {
   });
 }
 
-function getCategoryLabel(categoryId: SiteOption["category"]) {
-  return OPTION_CATEGORIES.find((c) => c.id === categoryId)?.label ?? categoryId;
+function getCategoryLabel(
+  categoryId: SiteOption["category"],
+  optionCategories: { id: string; label: string }[],
+) {
+  return optionCategories.find((c) => c.id === categoryId)?.label ?? categoryId;
 }
+
+type FormsContent = ReturnType<typeof useIntlayer<"forms">>;
 
 function OptionsPanel({
   categoryIndex,
@@ -100,29 +106,35 @@ function OptionsPanel({
   customRequest,
   onToggle,
   onCustomRequestChange,
+  siteOptions,
+  optionCategories,
+  content,
 }: {
   categoryIndex: number;
   selected: string[];
   customRequest: string;
   onToggle: (id: string) => void;
   onCustomRequestChange: (value: string) => void;
+  siteOptions: SiteOption[];
+  optionCategories: { id: string; label: string }[];
+  content: FormsContent;
 }) {
   const customInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const category = OPTION_CATEGORIES[categoryIndex];
+  const category = optionCategories[categoryIndex];
   const categoryOptions = useMemo(
-    () => filterOptionsByCategory(category.id),
-    [category.id],
+    () => siteOptions.filter((option) => option.category === category.id),
+    [siteOptions, category.id],
   );
   const isSearching = normalizeSearch(searchQuery).length > 0;
   const displayedOptions = useMemo(() => {
     if (isSearching) {
-      return filterOptionsBySearch(SITE_OPTIONS, searchQuery);
+      return filterOptionsBySearch(siteOptions, searchQuery);
     }
     return categoryOptions;
-  }, [isSearching, searchQuery, categoryOptions]);
+  }, [isSearching, searchQuery, categoryOptions, siteOptions]);
 
   function handleToggle(id: string) {
     onToggle(id);
@@ -145,16 +157,16 @@ function OptionsPanel({
     <motion.div key={category.id} {...stepTransition}>
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="t-mono">Modules optionnels</p>
+          <p className="t-mono">{content.optionalModules}</p>
           <p className="t-body mt-1 text-sm">
-            Base incluse · <PromoBasePrice />
+            {content.baseIncluded} <PromoBasePrice />
           </p>
         </div>
         <button
           type="button"
           className={`wizard-search-toggle${searchOpen ? " wizard-search-toggle-active" : ""}`}
           onClick={() => (searchOpen ? closeSearch() : openSearch())}
-          aria-label={searchOpen ? "Fermer la recherche" : "Rechercher une option"}
+          aria-label={searchOpen ? content.closeSearch : content.searchOption}
           aria-expanded={searchOpen}
         >
           {searchOpen ? (
@@ -187,14 +199,16 @@ function OptionsPanel({
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher une option…"
+                placeholder={content.searchPlaceholder}
                 className="wizard-search-input"
-                aria-label="Rechercher dans les options"
+                aria-label={content.searchInOptions}
               />
               {isSearching && (
                 <span className="wizard-search-count">
-                  {displayedOptions.length} résultat
-                  {displayedOptions.length !== 1 ? "s" : ""}
+                  {displayedOptions.length}{" "}
+                  {displayedOptions.length !== 1
+                    ? content.results
+                    : content.result}
                 </span>
               )}
             </div>
@@ -202,7 +216,12 @@ function OptionsPanel({
         )}
       </AnimatePresence>
 
-      {!isSearching && <OptionCategoryTabs activeIndex={categoryIndex} />}
+      {!isSearching && (
+        <OptionCategoryTabs
+          activeIndex={categoryIndex}
+          optionCategories={optionCategories}
+        />
+      )}
 
       <MotionStagger
         immediate
@@ -211,84 +230,88 @@ function OptionsPanel({
       >
         {displayedOptions.length === 0 ? (
           <p className="t-body py-8 text-center text-sm">
-            Aucune option ne correspond à votre recherche.
+            {content.noSearchResults}
           </p>
         ) : (
           displayedOptions.map((option) => {
-          const isSelected = selected.includes(option.id);
-          const isLocked = option.locked === true;
-          const isCustom = option.id === CUSTOM_OPTION_ID;
+            const isSelected = selected.includes(option.id);
+            const isLocked = option.locked === true;
+            const isCustom = option.id === CUSTOM_OPTION_ID;
 
-          return (
-            <MotionItem key={option.id} soft>
-              <div
-                className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
-              >
-                <button
-                  type="button"
-                  onClick={() => handleToggle(option.id)}
-                  aria-pressed={isSelected}
-                  aria-disabled={isLocked}
-                  className="w-full text-left"
+            return (
+              <MotionItem key={option.id} soft>
+                <div
+                  className={`option-card w-full ${isSelected ? "option-card-selected" : ""} ${isLocked ? "option-card-locked" : ""}`}
                 >
-                  <div>
-                    {isSearching && (
-                      <p className="t-mono mb-1 !text-[0.5625rem] !text-muted">
-                        {getCategoryLabel(option.category)}
+                  <button
+                    type="button"
+                    onClick={() => handleToggle(option.id)}
+                    aria-pressed={isSelected}
+                    aria-disabled={isLocked}
+                    className="w-full text-left"
+                  >
+                    <div>
+                      {isSearching && (
+                        <p className="t-mono mb-1 !text-[0.5625rem] !text-muted">
+                          {getCategoryLabel(option.category, optionCategories)}
+                        </p>
+                      )}
+                      <p className="text-[0.9375rem] font-medium text-black">
+                        <OptionLabel
+                          label={option.label}
+                          footnote={option.footnote}
+                        />
                       </p>
-                    )}
-                    <p className="text-[0.9375rem] font-medium text-black">
-                      <OptionLabel
-                        label={option.label}
-                        footnote={option.footnote}
-                      />
-                    </p>
-                    <p className="mt-1 text-sm text-muted leading-relaxed">
-                      {option.description}
-                    </p>
-                    {option.footnote ? (
-                      <p className="mt-2 text-xs text-muted leading-relaxed">
-                        <span className="text-red">*</span> {option.footnote}
+                      <p className="mt-1 text-sm text-muted leading-relaxed">
+                        {option.description}
                       </p>
-                    ) : null}
-                  </div>
-                </button>
+                      {option.footnote ? (
+                        <p className="mt-2 text-xs text-muted leading-relaxed">
+                          <span className="text-red">*</span> {option.footnote}
+                        </p>
+                      ) : null}
+                    </div>
+                  </button>
 
-                {isCustom && isSelected && (
-                  <div className="mt-3 pt-3 border-t border-border">
-                    <label
-                      htmlFor="custom-request"
-                      className="t-mono !text-[0.625rem]"
-                    >
-                      Décrivez votre besoin
-                    </label>
-                    <input
-                      ref={customInputRef}
-                      id="custom-request"
-                      type="text"
-                      value={customRequest}
-                      onChange={(e) => onCustomRequestChange(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      placeholder="Ex. intégration CRM, espace membres…"
-                      className="wizard-input mt-2"
-                    />
-                  </div>
-                )}
-              </div>
-            </MotionItem>
-          );
-        })
+                  {isCustom && isSelected && (
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <label
+                        htmlFor="custom-request"
+                        className="t-mono !text-[0.625rem]"
+                      >
+                        {content.describeNeed}
+                      </label>
+                      <input
+                        ref={customInputRef}
+                        id="custom-request"
+                        type="text"
+                        value={customRequest}
+                        onChange={(e) => onCustomRequestChange(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder={content.customPlaceholder}
+                        className="wizard-input mt-2"
+                      />
+                    </div>
+                  )}
+                </div>
+              </MotionItem>
+            );
+          })
         )}
       </MotionStagger>
     </motion.div>
   );
 }
 
-function buildSubmissionMessage(message: string, customRequest: string) {
+function buildSubmissionMessage(
+  message: string,
+  customRequest: string,
+  customNeedPrefix: string,
+) {
   const parts: string[] = [];
 
   if (customRequest.trim()) {
-    parts.push(`Besoin personnalisé : ${customRequest.trim()}`);
+    parts.push(`${customNeedPrefix} ${customRequest.trim()}`);
   }
   if (message.trim()) {
     parts.push(message.trim());
@@ -298,6 +321,9 @@ function buildSubmissionMessage(message: string, customRequest: string) {
 }
 
 export function QuoteWizard() {
+  const content = useIntlayer("forms");
+  const site = useIntlayer("site");
+  const { siteOptions, optionCategories } = useLocalizedOptions();
   const inviteCode = useInviteCode();
   const [step, setStep] = useState(0);
   const [optionPhase, setOptionPhase] = useState(0);
@@ -310,16 +336,20 @@ export function QuoteWizard() {
   const [errorMsg, setErrorMsg] = useState("");
   const [quoteId, setQuoteId] = useState<string | null>(null);
 
+  const steps = useMemo(
+    () => [content.stepContact, content.stepModules],
+    [content.stepContact, content.stepModules],
+  );
+
   useEffect(() => {
     const stored = sessionStorage.getItem(QUOTE_ID_KEY);
     if (stored) setQuoteId(stored);
   }, []);
 
-  const isLastOptionPhase =
-    optionPhase >= OPTION_CATEGORIES.length - 1;
+  const isLastOptionPhase = optionPhase >= optionCategories.length - 1;
 
   function toggleOption(id: string) {
-    const option = SITE_OPTIONS.find((o) => o.id === id);
+    const option = siteOptions.find((o) => o.id === id);
     if (option?.locked) return;
 
     setSelected((prev) => {
@@ -336,15 +366,15 @@ export function QuoteWizard() {
     const hasPhone = phone.trim().length > 0;
 
     if (!hasEmail && !hasPhone) {
-      setErrorMsg("Indiquez un email ou un téléphone.");
+      setErrorMsg(content.errorContactRequired);
       return false;
     }
     if (hasEmail && !isValidEmail(email)) {
-      setErrorMsg("Adresse email invalide.");
+      setErrorMsg(content.errorEmail);
       return false;
     }
     if (hasPhone && !isValidPhone(phone)) {
-      setErrorMsg("Numéro de téléphone invalide.");
+      setErrorMsg(content.errorPhone);
       return false;
     }
 
@@ -354,7 +384,7 @@ export function QuoteWizard() {
   function validateSubmission() {
     if (!validateContactFields()) return false;
     if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
-      setErrorMsg("Décrivez votre besoin personnalisé.");
+      setErrorMsg(content.errorCustomNeed);
       return false;
     }
     return true;
@@ -377,7 +407,7 @@ export function QuoteWizard() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMsg(data.error ?? "Impossible d'enregistrer vos coordonnées.");
+        setErrorMsg(data.error ?? content.errorSaveContact);
         return;
       }
 
@@ -386,7 +416,7 @@ export function QuoteWizard() {
         sessionStorage.setItem(QUOTE_ID_KEY, data.id);
       }
     } catch {
-      setErrorMsg("Erreur réseau. Réessayez.");
+      setErrorMsg(content.errorNetwork);
     }
   }
 
@@ -402,7 +432,7 @@ export function QuoteWizard() {
 
     if (step === OPTIONS_STEP && !isLastOptionPhase) {
       if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
-        setErrorMsg("Décrivez votre besoin personnalisé.");
+        setErrorMsg(content.errorCustomNeed);
         return;
       }
       setErrorMsg("");
@@ -411,7 +441,7 @@ export function QuoteWizard() {
     }
 
     if (selected.includes(CUSTOM_OPTION_ID) && !customRequest.trim()) {
-      setErrorMsg("Décrivez votre besoin personnalisé.");
+      setErrorMsg(content.errorCustomNeed);
       return;
     }
 
@@ -448,7 +478,11 @@ export function QuoteWizard() {
           email: email.trim(),
           phone: phone.trim(),
           selectedIds: selected,
-          message: buildSubmissionMessage(message, customRequest),
+          message: buildSubmissionMessage(
+            message,
+            customRequest,
+            content.customNeedPrefix,
+          ),
           inviteCode: inviteCode ?? undefined,
           quoteId: quoteId ?? undefined,
         }),
@@ -458,7 +492,7 @@ export function QuoteWizard() {
 
       if (!res.ok) {
         setStatus("error");
-        setErrorMsg(data.error ?? "Erreur lors de l'envoi.");
+        setErrorMsg(data.error ?? content.errorSend);
         return;
       }
 
@@ -466,7 +500,7 @@ export function QuoteWizard() {
       sessionStorage.removeItem(QUOTE_ID_KEY);
     } catch {
       setStatus("error");
-      setErrorMsg("Erreur réseau. Réessayez.");
+      setErrorMsg(content.errorNetwork);
     }
   }
 
@@ -474,17 +508,18 @@ export function QuoteWizard() {
     const reach = [email.trim(), phone.trim()].filter(Boolean).join(" · ");
     return (
       <MotionDiv immediate className="wizard-panel text-center py-12">
-        <p className="t-mono !text-black">Demande envoyée</p>
+        <p className="t-mono !text-black">{content.requestSent}</p>
         <p className="t-display mt-4 text-2xl sm:text-3xl">
-          Merci pour votre confiance
+          {content.thankYou}
           <span className="text-red">.</span>
         </p>
         <p className="t-body mt-4">
-          Nous revenons vers vous sous 24h
+          {content.replyWithin24h}
           {reach ? (
             <>
               {" "}
-              via <span className="text-black font-medium">{reach}</span>
+              {content.via}{" "}
+              <span className="text-black font-medium">{reach}</span>
             </>
           ) : null}
           .
@@ -494,8 +529,7 @@ export function QuoteWizard() {
   }
 
   const showBack = step > CONTACT_STEP || (step === OPTIONS_STEP && optionPhase > 0);
-  const isLastStep =
-    step === OPTIONS_STEP && isLastOptionPhase;
+  const isLastStep = step === OPTIONS_STEP && isLastOptionPhase;
 
   return (
     <div className="wizard-panel">
@@ -504,7 +538,7 @@ export function QuoteWizard() {
         className="flex items-center gap-2 mb-8"
         stagger={0.06}
       >
-        {STEPS.map((label, i) => (
+        {steps.map((label, i) => (
           <MotionItem key={label} soft className="flex items-center gap-2">
             <span
               className={`wizard-step ${i === step ? "wizard-step-active" : i < step ? "wizard-step-done" : ""}`}
@@ -516,7 +550,7 @@ export function QuoteWizard() {
             >
               {label}
             </span>
-            {i < STEPS.length - 1 && (
+            {i < steps.length - 1 && (
               <span className="w-6 h-px bg-border mx-1" aria-hidden="true" />
             )}
           </MotionItem>
@@ -528,41 +562,41 @@ export function QuoteWizard() {
           <motion.div key="contact" {...stepTransition} className="space-y-5">
             <div>
               <label htmlFor="email" className="t-mono">
-                Email
+                {content.email}
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@entreprise.ch"
+                placeholder={content.emailPlaceholder}
                 className="wizard-input mt-3"
                 autoComplete="email"
               />
             </div>
             <div>
               <label htmlFor="phone" className="t-mono">
-                Téléphone
+                {content.phone}
               </label>
               <input
                 id="phone"
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="078 604 15 44"
+                placeholder={content.phonePlaceholder}
                 className="wizard-input mt-3"
                 autoComplete="tel"
               />
             </div>
             <div>
               <label htmlFor="message" className="t-mono">
-                Message (optionnel)
+                {content.messageOptional}
               </label>
               <textarea
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Décrivez brièvement votre projet…"
+                placeholder={content.messagePlaceholder}
                 rows={3}
                 className="wizard-input mt-3 resize-none"
               />
@@ -577,6 +611,9 @@ export function QuoteWizard() {
             customRequest={customRequest}
             onToggle={toggleOption}
             onCustomRequestChange={setCustomRequest}
+            siteOptions={siteOptions}
+            optionCategories={optionCategories}
+            content={content}
           />
         )}
       </AnimatePresence>
@@ -597,7 +634,7 @@ export function QuoteWizard() {
       >
         {showBack ? (
           <button type="button" onClick={back} className="btn-outline">
-            Retour
+            {site.back}
           </button>
         ) : (
           <span />
@@ -610,11 +647,11 @@ export function QuoteWizard() {
             disabled={status === "loading"}
             className="btn-primary disabled:opacity-50"
           >
-            {status === "loading" ? "Envoi…" : "Réserver ma place"}
+            {status === "loading" ? content.sending : site.bookSpot}
           </button>
         ) : (
           <button type="button" onClick={next} className="btn-primary">
-            Continuer
+            {content.continue}
           </button>
         )}
       </MotionDiv>
