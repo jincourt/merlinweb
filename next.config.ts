@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 import { withIntlayerSync } from "next-intlayer/server";
 
 const nextConfig: NextConfig = {
@@ -11,6 +12,18 @@ const nextConfig: NextConfig = {
         pathname: "/photos/**",
       },
     ],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@intlayer/config/built": path.resolve(
+          process.cwd(),
+          ".intlayer/config/configuration.mjs",
+        ),
+      };
+    }
+    return config;
   },
 };
 
